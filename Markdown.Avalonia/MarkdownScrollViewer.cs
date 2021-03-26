@@ -58,6 +58,13 @@ namespace Markdown.Avalonia
                 owner => owner.ScrollValue,
                 (owner, v) => owner.ScrollValue = v);
 
+        public static readonly AvaloniaProperty<Thickness> PaddingProperty =
+            AvaloniaProperty.RegisterDirect<MarkdownScrollViewer, Thickness>(
+                nameof(Padding),
+                owner => owner.Padding,
+                (owner, v) => owner.Padding = v);
+
+
 
         private ScrollViewer _viewer;
 
@@ -136,6 +143,12 @@ namespace Markdown.Avalonia
         {
             set { _viewer.Offset = value; }
             get { return _viewer.Offset; }
+        }
+
+        public Thickness Padding
+        {
+            set { _viewer.Padding = value; }
+            get { return _viewer.Padding; }
         }
 
         [Content]
