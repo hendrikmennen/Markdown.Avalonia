@@ -120,7 +120,7 @@ namespace Markdown.Avalonia
             _assetPathRoot = Environment.CurrentDirectory;
 
             HyperlinkCommand = new DefaultHyperlinkCommand();
-            BitmapLoader = new DefaultBitmapLoader();
+            //BitmapLoader = new DefaultBitmapLoader();
 
             var assetLoader = AvaloniaLocator.Current.GetService<IAssetLoader>();
             using (var strm = assetLoader.Open(new Uri($"avares://Markdown.Avalonia/Assets/ImageNotFound.bmp")))
