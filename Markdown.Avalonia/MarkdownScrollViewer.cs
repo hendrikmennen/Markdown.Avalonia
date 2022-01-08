@@ -87,7 +87,7 @@ namespace Markdown.Avalonia
             _viewer = new ScrollViewer()
             {
                 Padding = new Thickness(1),
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             };
 
