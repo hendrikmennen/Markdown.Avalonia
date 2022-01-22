@@ -154,10 +154,10 @@ namespace Markdown.Avalonia.Extensions
                 var copySpan = new HighlightingSpan();
                 copySpan.StartExpression = baseSpan.StartExpression;
                 copySpan.EndExpression = baseSpan.EndExpression;
-                copySpan.RuleSet = Wrap(baseSpan.RuleSet);
-                copySpan.StartColor = Wrap(baseSpan.StartColor);
-                copySpan.SpanColor = Wrap(baseSpan.SpanColor);
-                copySpan.EndColor = Wrap(baseSpan.EndColor);
+                copySpan.RuleSet = baseSpan.RuleSet;
+                copySpan.StartColor = baseSpan.StartColor;
+                copySpan.SpanColor = baseSpan.SpanColor;
+                copySpan.EndColor = baseSpan.EndColor;
                 copySpan.SpanColorIncludesStart = baseSpan.SpanColorIncludesStart;
                 copySpan.SpanColorIncludesEnd = baseSpan.SpanColorIncludesEnd;
 
@@ -168,7 +168,7 @@ namespace Markdown.Avalonia.Extensions
             {
                 var copyRule = new HighlightingRule();
                 copyRule.Regex = baseRule.Regex;
-                copyRule.Color = Wrap(baseRule.Color);
+                copyRule.Color = baseRule.Color;
 
                 copySet.Rules.Add(copyRule);
             }
