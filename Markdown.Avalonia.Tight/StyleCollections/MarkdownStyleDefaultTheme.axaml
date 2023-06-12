@@ -104,11 +104,6 @@
       <Setter Property="Background"      Value="Transparent"/>
     </Style.Setters>
   </Style>
-  <Style Selector="TextBlock.CodeBlock">
-    <Style.Setters>
-      <Setter Property="FontFamily"      Value="menlo,monaco,consolas,droid sans mono,inconsolata,courier new,monospace,dejavu sans mono"/>
-    </Style.Setters>
-  </Style>
   <Style Selector="Border.NoContainer">
     <Style.Setters>
       <Setter Property="BorderBrush"     Value="Red"/>
