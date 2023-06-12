@@ -98,16 +98,15 @@
 
   <Style Selector="Border.CodeBlock">
     <Style.Setters>
-      <Setter Property="BorderBrush"     Value="{mde:Alpha ThemeForegroundColor, 0.13}"/>
-      <Setter Property="BorderThickness" Value="0,5,0,5"/>
-      <Setter Property="Margin"          Value="5,0,5,0"/>
-      <Setter Property="Background"      Value="{mde:Alpha ThemeForegroundColor, 0.06}"/>
+      <Setter Property="BorderBrush"     Value="Transparent"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Margin"          Value="0"/>
+      <Setter Property="Background"      Value="Transparent"/>
     </Style.Setters>
   </Style>
   <Style Selector="TextBlock.CodeBlock">
     <Style.Setters>
       <Setter Property="FontFamily"      Value="menlo,monaco,consolas,droid sans mono,inconsolata,courier new,monospace,dejavu sans mono"/>
-      <Setter Property="Foreground"      Value="{mde:DivideColor Blue, ThemeForegroundColor, 0.45}"/>
     </Style.Setters>
   </Style>
   <Style Selector="Border.NoContainer">
@@ -118,7 +117,6 @@
 
   <Style Selector="ctxt|CCode">
     <Style.Setters>
-      <Setter Property="Foreground" Value="{mde:DivideColor Blue, ThemeForegroundColor, 0.45}" />
       <Setter Property="Background" Value="{mde:Alpha ThemeForegroundColor, 0.06}" />
     </Style.Setters>
   </Style>

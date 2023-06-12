@@ -107,7 +107,6 @@
   <Style Selector="TextBlock.CodeBlock">
     <Style.Setters>
       <Setter Property="FontFamily"      Value="menlo,monaco,consolas,droid sans mono,inconsolata,courier new,monospace,dejavu sans mono"/>
-      <Setter Property="Foreground"      Value="{mde:DivideColor Blue, TextFillColorPrimary, 0.4}"/>
     </Style.Setters>
   </Style>
   <Style Selector="Border.NoContainer">
@@ -118,7 +117,6 @@
 
   <Style Selector="ctxt|CCode">
     <Style.Setters>
-      <Setter Property="Foreground" Value="{mde:DivideColor Blue, TextFillColorPrimary, 0.4}" />
       <Setter Property="Background" Value="{mde:Alpha ControlFillColorDefaultBrush, 0.9}" />
     </Style.Setters>
   </Style>
