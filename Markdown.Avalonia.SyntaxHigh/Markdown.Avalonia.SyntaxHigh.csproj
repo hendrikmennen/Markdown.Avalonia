@@ -26,6 +26,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj" />
     <ProjectReference Include="..\..\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj" />
     <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj" PrivateAssets="All" />
   </ItemGroup>

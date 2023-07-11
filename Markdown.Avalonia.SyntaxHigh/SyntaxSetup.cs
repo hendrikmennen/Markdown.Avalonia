@@ -11,11 +11,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+using AvaloniaEdit.TextMate;
+using TextMateSharp.Registry;
+using TextMateSharp.Themes;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
     public class SyntaxSetup
     {
+        public static IRawTheme? CurrentEditorTheme;
+        public static IAdvancedRegistryOptions? RegistryOptions;
+
         public IEnumerable<KeyValuePair<string, Func<Match, Control>>> GetOverrideConverters()
         {
             yield return new KeyValuePair<string, Func<Match, Control>>(
@@ -57,12 +63,20 @@ namespace Markdown.Avalonia.SyntaxHigh
                 }
 
                 var txtEdit = new TextEditor();
+                
                 txtEdit.Tag = lang;
 
                 txtEdit.Text = code;
                 txtEdit.HorizontalAlignment = HorizontalAlignment.Stretch;
                 txtEdit.IsReadOnly = true;
 
+                if (RegistryOptions?.GetScopeByLanguageId(lang) is { } scope)
+                {
+                    var textMate = txtEdit.InstallTextMate(RegistryOptions);
+                    textMate.SetGrammar(scope);
+                    textMate.SetTheme(CurrentEditorTheme ?? RegistryOptions.GetDefaultTheme());
+                }
+                
                 var result = new Border();
                 result.Classes.Add(Markdown.CodeBlockClass);
                 result.Child = txtEdit;
