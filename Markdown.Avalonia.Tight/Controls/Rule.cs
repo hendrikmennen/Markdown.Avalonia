@@ -2,10 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Text;
 using HAlign = Avalonia.Layout.HorizontalAlignment;
 using VAlign = Avalonia.Layout.VerticalAlignment;
 

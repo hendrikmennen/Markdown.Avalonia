@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using Avalonia.Media;
-using Avalonia.Layout;
 
 namespace Markdown.Avalonia.Tables
 {

@@ -1,10 +1,6 @@
 ﻿using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Metadata;
 using Markdown.Avalonia.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Markdown.Avalonia

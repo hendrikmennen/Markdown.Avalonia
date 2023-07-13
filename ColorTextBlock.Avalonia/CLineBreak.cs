@@ -1,5 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Media;
+﻿using Avalonia.Media;
 using ColorTextBlock.Avalonia.Geometries;
 using System.Collections.Generic;
 using System.Globalization;

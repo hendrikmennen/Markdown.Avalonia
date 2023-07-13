@@ -1,18 +1,12 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
-using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using AvaloniaEdit;
-using AvaloniaEdit.Highlighting;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
 using AvaloniaEdit.TextMate;
-using TextMateSharp.Registry;
 using TextMateSharp.Themes;
 
 namespace Markdown.Avalonia.SyntaxHigh

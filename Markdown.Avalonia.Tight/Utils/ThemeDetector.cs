@@ -1,6 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
-using Avalonia.Styling;
 
 
 namespace Markdown.Avalonia.Utils
