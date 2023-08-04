@@ -1,8 +1,4 @@
 ﻿using Avalonia.Media.Imaging;
-using Avalonia.Platform;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Markdown.Avalonia.Utils
 {

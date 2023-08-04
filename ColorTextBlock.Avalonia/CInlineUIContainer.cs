@@ -4,7 +4,6 @@ using ColorTextBlock.Avalonia.Geometies;
 using ColorTextBlock.Avalonia.Geometries;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ColorTextBlock.Avalonia
 {

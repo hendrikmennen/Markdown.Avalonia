@@ -2,7 +2,6 @@
 using Markdown.Avalonia.SyntaxHigh.StyleCollections;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {

@@ -1,7 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Media;
-using Avalonia.Media.TextFormatting;
-using System.Linq;
+﻿using Avalonia.Media;
 
 namespace ColorTextBlock.Avalonia.Geometries
 {

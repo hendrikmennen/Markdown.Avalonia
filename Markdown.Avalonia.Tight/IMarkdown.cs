@@ -1,8 +1,5 @@
 ﻿using Avalonia.Controls;
 using Markdown.Avalonia.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows.Input;
 
 namespace Markdown.Avalonia

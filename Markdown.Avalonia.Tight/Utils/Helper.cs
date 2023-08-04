@@ -1,8 +1,4 @@
-﻿using Avalonia;
-using Avalonia.Platform;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace Markdown.Avalonia.Utils
 {
