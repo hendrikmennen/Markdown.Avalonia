@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\Markdown.Avalonia.props" />
+  <Import Project="..\..\..\build\props\AvaloniaEdit.props"/>
+  <Import Project="..\..\..\build\props\AvaloniaEdit.TextMate.props"/>
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -26,8 +28,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\AvaloniaEdit\src\AvaloniaEdit.TextMate\AvaloniaEdit.TextMate.csproj" />
-    <ProjectReference Include="..\..\AvaloniaEdit\src\AvaloniaEdit\AvaloniaEdit.csproj" />
     <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj" PrivateAssets="All" />
   </ItemGroup>
 
