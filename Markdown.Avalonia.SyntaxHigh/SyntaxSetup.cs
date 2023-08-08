@@ -56,21 +56,26 @@ namespace Markdown.Avalonia.SyntaxHigh
                     //SetupStyle();
                 }
 
-                var txtEdit = new TextEditor();
-                
-                txtEdit.Tag = lang;
-
-                txtEdit.Text = code;
-                txtEdit.HorizontalAlignment = HorizontalAlignment.Stretch;
-                txtEdit.IsReadOnly = true;
+                var txtEdit = new TextEditor
+                {
+                    Tag = lang,
+                    Text = code,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    IsReadOnly = true
+                };
 
                 if (RegistryOptions?.GetScopeByLanguageId(lang) is { } scope)
                 {
                     var textMate = txtEdit.InstallTextMate(RegistryOptions);
                     textMate.SetGrammar(scope);
                     textMate.SetTheme(CurrentEditorTheme ?? RegistryOptions.GetDefaultTheme());
+
+                    txtEdit.DetachedFromVisualTree += (_, _) =>
+                    {
+                        textMate.Dispose();
+                    };
                 }
-                
+
                 var result = new Border();
                 result.Classes.Add(Markdown.CodeBlockClass);
                 result.Child = txtEdit;
