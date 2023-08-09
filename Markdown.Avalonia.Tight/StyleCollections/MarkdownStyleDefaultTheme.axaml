@@ -132,7 +132,7 @@
 
   <Style Selector="Grid.List">
     <Style.Setters>
-      <Setter Property="Margin" Value="40,0,0,0"/>
+      <Setter Property="Margin" Value="20,0,0,0"/>
     </Style.Setters>
   </Style>
   <Style Selector="ctxt|CTextBlock.ListMarker">
@@ -143,6 +143,7 @@
 
   <Style Selector="Border.Blockquote">
     <Style.Setters>
+      <Setter Property="CornerRadius" Value="3"/>
       <Setter Property="BorderBrush"     Value="{mde:Alpha ThemeForegroundColor, 0.13}"/>
       <Setter Property="BorderThickness" Value="5,0,0,0"/>
     </Style.Setters>
