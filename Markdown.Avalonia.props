@@ -13,10 +13,10 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AvaloniaVersion>11.0.4</AvaloniaVersion>
-    <DemoAvaloniaVersion>11.0.4</DemoAvaloniaVersion>
+    <AvaloniaVersion>11.0.5</AvaloniaVersion>
+    <DemoAvaloniaVersion>11.0.5</DemoAvaloniaVersion>
     <EnableAvaloniaEdit>enabled</EnableAvaloniaEdit>
-    <AvaloniaEditVersion>11.0.4</AvaloniaEditVersion>
+    <AvaloniaEditVersion>11.0.5</AvaloniaEditVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(AVA_VER)' != '' ">
