@@ -3,8 +3,11 @@ using Avalonia.Styling;
 
 namespace Markdown.Avalonia.StyleCollections
 {
-    class MarkdownStyleDefaultTheme : Styles
+    class MarkdownStyleDefaultTheme : Styles, INamedStyle
     {
+        public string Name => nameof(MarkdownStyle.SimpleTheme);
+        public bool IsEditted { get; set; }
+
         public MarkdownStyleDefaultTheme()
         {
             AvaloniaXamlLoader.Load(this);

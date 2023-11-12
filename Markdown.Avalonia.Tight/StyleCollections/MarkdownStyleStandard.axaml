@@ -120,6 +120,18 @@
     </Style.Setters>
   </Style>
 
+  <Style Selector="Grid.Table">
+    <Style.Setters>
+      <Setter Property="mdc:AutoScaleColumnDefinitions.IsEnabled" Value="True"/>
+    </Style.Setters>
+  </Style>
+
+  <Style Selector="Border.TightTable">
+    <Style.Setters>
+      <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style.Setters>
+  </Style>
+
   <Style Selector="Border.TableHeader">
     <Style.Setters>
       <Setter Property="Background" Value="LightGray"/>

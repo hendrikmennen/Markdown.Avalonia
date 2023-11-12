@@ -7,9 +7,15 @@ using System.Collections.Generic;
 
 namespace ColorTextBlock.Avalonia
 {
+    /// <summary>
+    /// Places a control as an inline element.
+    /// </summary>
     public class CInlineUIContainer : CInline
     {
-        internal Control Content { get; }
+        /// <summary>
+        /// A displayed control
+        /// </summary>
+        public Control? Content { get; set; }
         internal DummyGeometryForControl? Indicator { get; private set; }
 
         public CInlineUIContainer(Control content)
@@ -19,6 +25,12 @@ namespace ColorTextBlock.Avalonia
 
         protected override IEnumerable<CGeometry> MeasureOverride(double entireWidth, double remainWidth)
         {
+            if (Content is null)
+            {
+                Indicator = null;
+                return new CGeometry[0];
+            }
+
             Content.Measure(new Size(remainWidth, Double.PositiveInfinity));
 
             if (Content.DesiredSize.Width > remainWidth)
@@ -34,6 +46,7 @@ namespace ColorTextBlock.Avalonia
             }
         }
 
+        /// <inheritdoc/>
         public override string AsString() => String.Empty;
     }
 }

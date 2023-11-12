@@ -70,12 +70,24 @@
     </Style.Setters>
   </Style>
 
+  <Style Selector="Border.TightTable">
+    <Style.Setters>
+      <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style.Setters>
+  </Style>
+
   <Style Selector="Grid.Table > Border">
     <Style.Setters>
       <Setter Property="Margin" Value="0"/>
       <Setter Property="BorderThickness" Value="1,1,0,0"/>
       <Setter Property="BorderBrush" Value="{mde:Alpha ThemeBorderHighColor}"/>
       <Setter Property="Padding" Value="2"/>
+    </Style.Setters>
+  </Style>
+
+  <Style Selector="Grid.Table">
+    <Style.Setters>
+      <Setter Property="mdc:AutoScaleColumnDefinitions.IsEnabled" Value="True"/>
     </Style.Setters>
   </Style>
 

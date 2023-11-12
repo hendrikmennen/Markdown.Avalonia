@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
+using System;
 using System.Linq;
 
 namespace ColorTextBlock.Avalonia.Geometries
@@ -45,6 +46,7 @@ namespace ColorTextBlock.Avalonia.Geometries
 
         public double WidthIncludingTrailingWhitespace => _result.WidthIncludingTrailingWhitespace;
         public double Height => _result.Height;
+        public double BaseHeight => _result.Baseline;
 
         private TextLine _result;
 
@@ -75,7 +77,7 @@ namespace ColorTextBlock.Avalonia.Geometries
             CTextLine tline,
             TextVerticalAlignment align,
             bool linebreak) :
-            base(owner, tline.WidthIncludingTrailingWhitespace, tline.Height, tline.Height, align, linebreak)
+            base(owner, tline.WidthIncludingTrailingWhitespace, tline.Height, tline.BaseHeight, align, linebreak)
         {
             Line = tline;
             LayoutForeground = owner.Foreground;
@@ -85,7 +87,7 @@ namespace ColorTextBlock.Avalonia.Geometries
                 TextLineGeometry baseGeometry,
                 bool linebreak) :
             base(baseGeometry.Owner,
-                 baseGeometry.Width, baseGeometry.Height, baseGeometry.Height,
+                 baseGeometry.Width, baseGeometry.Height, baseGeometry.BaseHeight,
                  baseGeometry.TextVerticalAlignment,
                  linebreak)
         {
@@ -111,19 +113,20 @@ namespace ColorTextBlock.Avalonia.Geometries
 
             Line.Draw(ctx, new Point(Left, Top));
 
-            var pen = new Pen(foreground);
             if (IsUnderline)
             {
-                ctx.DrawLine(pen,
-                    new Point(Left, Top + Height),
-                    new Point(Left + Width, Top + Height));
+                var ypos = Math.Round(Top + Height);
+                ctx.DrawLine(new Pen(foreground, 2),
+                    new Point(Left, ypos),
+                    new Point(Left + Width, ypos));
             }
 
             if (IsStrikethrough)
             {
-                ctx.DrawLine(pen,
-                    new Point(Left, +Top + Height / 2),
-                    new Point(Left + Width, Top + Height / 2));
+                var ypos = Math.Round(Top + Height / 2);
+                ctx.DrawLine(new Pen(foreground, 2),
+                    new Point(Left, ypos),
+                    new Point(Left + Width, ypos));
             }
         }
     }
