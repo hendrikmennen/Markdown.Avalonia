@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+    <TargetFramework>net7.0</TargetFramework>
     <PackageId>Markdown.Avalonia.SyntaxHigh</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>whistyun</Authors>
