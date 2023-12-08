@@ -1,10 +1,10 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <AvaloniaVersion>11.0.5</AvaloniaVersion>
-    <DemoAvaloniaVersion>11.0.5</DemoAvaloniaVersion>
+    <AvaloniaVersion>11.0.6</AvaloniaVersion>
+    <DemoAvaloniaVersion>11.0.6</DemoAvaloniaVersion>
     <EnableAvaloniaEdit>enabled</EnableAvaloniaEdit>
-    <AvaloniaEditVersion>11.0.5</AvaloniaEditVersion>
+    <AvaloniaEditVersion>11.0.6</AvaloniaEditVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(AVA_VER)' != '' ">
