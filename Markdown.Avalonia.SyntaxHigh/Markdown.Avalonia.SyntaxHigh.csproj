@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\Markdown.Avalonia.props" />
-  <Import Project="..\..\..\build\props\AvaloniaEdit.props"/>
-  <Import Project="..\..\..\build\props\AvaloniaEdit.TextMate.props"/>
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PackageId>Markdown.Avalonia.SyntaxHigh</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>whistyun</Authors>
@@ -22,13 +20,10 @@
   <ItemGroup>
     <None Include="..\pack_readme\Markdown.Avalonia.SyntaxHigh.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\OneWare.Essentials\src\OneWare.Essentials\OneWare.Essentials.csproj" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
