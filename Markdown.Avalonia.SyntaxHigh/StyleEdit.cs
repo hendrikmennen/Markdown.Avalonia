@@ -1,5 +1,5 @@
-﻿using Markdown.Avalonia.Plugins;
-using Avalonia.Styling;
+﻿using Avalonia.Styling;
+using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.SyntaxHigh.StyleCollections;
 
 namespace Markdown.Avalonia.SyntaxHigh
@@ -20,5 +20,4 @@ namespace Markdown.Avalonia.SyntaxHigh
             }
         }
     }
-
 }

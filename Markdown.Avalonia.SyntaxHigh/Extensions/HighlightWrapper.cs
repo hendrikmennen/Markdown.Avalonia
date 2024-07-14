@@ -1,17 +1,16 @@
-﻿using Avalonia.Media;
+﻿using System.Collections.Generic;
+using Avalonia.Media;
 using AvaloniaEdit.Highlighting;
-using System;
-using System.Collections.Generic;
 
 namespace Markdown.Avalonia.SyntaxHigh.Extensions
 {
     public class HighlightWrapper : IHighlightingDefinition
     {
         private readonly IHighlightingDefinition _baseDef;
-        private readonly Color _foreColor;
         private readonly Dictionary<HighlightingRuleSet, HighlightingRuleSet> _converted;
-        private readonly Dictionary<string, HighlightingRuleSet> _namedRuleSet;
+        private readonly Color _foreColor;
         private readonly Dictionary<string, HighlightingColor> _namedColors;
+        private readonly Dictionary<string, HighlightingRuleSet> _namedRuleSet;
 
         public HighlightWrapper(IHighlightingDefinition baseDef, Color foreColor)
         {
@@ -27,8 +26,9 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
                 var name = color.Name;
 
                 var newCol = color.Clone();
-                newCol.Foreground = color.Foreground is null ?
-                    null : new MixHighlightingBrush(color.Foreground, foreColor);
+                newCol.Foreground = color.Foreground is null
+                    ? null
+                    : new MixHighlightingBrush(color.Foreground, foreColor);
                 _namedColors[name] = newCol;
             }
 
@@ -54,24 +54,24 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
         {
             if (ruleSet is null) return null;
 
-            if (!String.IsNullOrEmpty(ruleSet.Name)
+            if (!string.IsNullOrEmpty(ruleSet.Name)
                 && _namedRuleSet.TryGetValue(ruleSet.Name, out var cachedRule))
                 return cachedRule;
 
             if (_converted.TryGetValue(ruleSet, out var cachedRule2))
                 return cachedRule2;
 
-            var copySet = new HighlightingRuleSet() { Name = ruleSet.Name };
+            var copySet = new HighlightingRuleSet { Name = ruleSet.Name };
 
             _converted[ruleSet] = copySet;
-            if (!String.IsNullOrEmpty(copySet.Name))
+            if (!string.IsNullOrEmpty(copySet.Name))
                 _namedRuleSet[copySet.Name] = copySet;
 
             foreach (var baseSpan in ruleSet.Spans)
             {
                 if (baseSpan is null) continue;
 
-                var copySpan = new HighlightingSpan()
+                var copySpan = new HighlightingSpan
                 {
                     StartExpression = baseSpan.StartExpression,
                     EndExpression = baseSpan.EndExpression,
@@ -80,7 +80,7 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
                     SpanColor = Wrap(baseSpan.SpanColor),
                     EndColor = Wrap(baseSpan.EndColor),
                     SpanColorIncludesStart = baseSpan.SpanColorIncludesStart,
-                    SpanColorIncludesEnd = baseSpan.SpanColorIncludesEnd,
+                    SpanColorIncludesEnd = baseSpan.SpanColorIncludesEnd
                 };
 
                 copySet.Spans.Add(copySpan);
@@ -88,7 +88,7 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
 
             foreach (var baseRule in ruleSet.Rules)
             {
-                var copyRule = new HighlightingRule()
+                var copyRule = new HighlightingRule
                 {
                     Regex = baseRule.Regex,
                     Color = Wrap(baseRule.Color)
@@ -104,15 +104,15 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
         {
             if (color is null) return null;
 
-            if (!String.IsNullOrEmpty(color.Name)
+            if (!string.IsNullOrEmpty(color.Name)
                 && _namedColors.TryGetValue(color.Name, out var cachedColor))
                 return cachedColor;
 
             var copyColor = color.Clone();
-            copyColor.Foreground = color.Foreground is null ?
-                null : new MixHighlightingBrush(color.Foreground, _foreColor);
+            copyColor.Foreground =
+                color.Foreground is null ? null : new MixHighlightingBrush(color.Foreground, _foreColor);
 
-            if (!String.IsNullOrEmpty(copyColor.Name))
+            if (!string.IsNullOrEmpty(copyColor.Name))
                 _namedColors[copyColor.Name] = copyColor;
 
             return copyColor;

@@ -3,14 +3,14 @@ using Avalonia.Styling;
 
 namespace Markdown.Avalonia.StyleCollections
 {
-    class MarkdownStyleDefaultTheme : Styles, INamedStyle
+    internal class MarkdownStyleDefaultTheme : Styles, INamedStyle
     {
-        public string Name => nameof(MarkdownStyle.SimpleTheme);
-        public bool IsEditted { get; set; }
-
         public MarkdownStyleDefaultTheme()
         {
             AvaloniaXamlLoader.Load(this);
         }
+
+        public string Name => nameof(MarkdownStyle.SimpleTheme);
+        public bool IsEditted { get; set; }
     }
 }

@@ -1,22 +1,18 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ColorTextBlock.Avalonia;
 using Markdown.Avalonia.Parsers;
 using Markdown.Avalonia.Utils;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Design;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Markdown.Avalonia.Plugins
 {
@@ -24,31 +20,44 @@ namespace Markdown.Avalonia.Plugins
     {
         internal const string BuiltinAsmNm = "Markdown.Avalonia.SyntaxHigh";
         internal const string BuiltinTpNm = "Markdown.Avalonia.SyntaxHigh.SyntaxHighlight";
-
-        private bool _isFreezed = false;
-        private bool _builtinCalled = false;
-
-        private ICommand? _overwriteHyperlink;
+        private bool _builtinCalled;
         private ICommand? _command;
-        private ICommand? _defaultHyperlink;
-
-        private IContainerBlockHandler? _overwriteHandler;
         private IContainerBlockHandler? _containerBlock;
-
-        private IPathResolver? _pathResolver;
+        private ICommand? _defaultHyperlink;
         private IPathResolver? _defaultPathResolver;
-
-        private ImageLoader _imageLoader;
+        private bool _EnableContainerBlockExt = true;
+        private bool _EnableListMarkerExt = true;
 
         private bool _EnableNoteBlock = true;
-        private bool _EnableTableBlock = true;
+        private bool _EnablePreRenderingCodeBlock;
         private bool _EnableRuleExt = true;
-        private bool _EnableTextAlignment = true;
         private bool _EnableStrikethrough = true;
-        private bool _EnableListMarkerExt = true;
-        private bool _EnableContainerBlockExt = true;
+        private bool _EnableTableBlock = true;
+        private bool _EnableTextAlignment = true;
         private bool _EnableTextileInline = true;
-        private bool _EnablePreRenderingCodeBlock = false;
+
+        private readonly ImageLoader _imageLoader;
+
+        private bool _isFreezed;
+
+        private IContainerBlockHandler? _overwriteHandler;
+
+        private ICommand? _overwriteHyperlink;
+
+        private IPathResolver? _pathResolver;
+
+
+        public SetupInfo()
+        {
+            _imageLoader = new ImageLoader(this);
+
+            BlockOverrides = new List<IBlockOverride>();
+            TopBlock = new List<BlockParser>();
+            Block = new List<BlockParser>();
+            Inline = new List<InlineParser>();
+            StyleEdits = new List<IStyleEdit>();
+            ImageResolvers = new List<IImageResolver>();
+        }
 
         internal List<IBlockOverride> BlockOverrides { get; }
         internal List<BlockParser> TopBlock { get; }
@@ -56,22 +65,12 @@ namespace Markdown.Avalonia.Plugins
         internal List<InlineParser> Inline { get; }
         internal List<IStyleEdit> StyleEdits { get; }
         internal List<IImageResolver> ImageResolvers { get; }
-        internal ICommand HyperlinkCommand => _overwriteHyperlink ?? _command ?? (_defaultHyperlink ??= new DefaultHyperlinkCommand());
+
+        internal ICommand HyperlinkCommand =>
+            _overwriteHyperlink ?? _command ?? (_defaultHyperlink ??= new DefaultHyperlinkCommand());
+
         internal IContainerBlockHandler? ContainerBlock => _overwriteHandler ?? _containerBlock;
         internal IPathResolver PathResolver => _pathResolver ?? (_defaultPathResolver ??= new DefaultPathResolver());
-
-
-        public SetupInfo()
-        {
-            _imageLoader = new(this);
-
-            BlockOverrides = new();
-            TopBlock = new();
-            Block = new();
-            Inline = new();
-            StyleEdits = new();
-            ImageResolvers = new();
-        }
 
 
         public bool EnableNoteBlock
@@ -200,9 +199,8 @@ namespace Markdown.Avalonia.Plugins
             CheckChangeable();
 
             if (_command is not null)
-            {
-                throw new InvalidOperationException("IContainerBlockHandler is already set. Please check Markdown.Avalonia plugins");
-            }
+                throw new InvalidOperationException(
+                    "IContainerBlockHandler is already set. Please check Markdown.Avalonia plugins");
 
             _command = command;
         }
@@ -212,9 +210,8 @@ namespace Markdown.Avalonia.Plugins
             CheckChangeable();
 
             if (_containerBlock is not null)
-            {
-                throw new InvalidOperationException("IContainerBlockHandler is already set. Please check Markdown.Avalonia plugins");
-            }
+                throw new InvalidOperationException(
+                    "IContainerBlockHandler is already set. Please check Markdown.Avalonia plugins");
 
             _containerBlock = handler;
         }
@@ -224,9 +221,8 @@ namespace Markdown.Avalonia.Plugins
             CheckChangeable();
 
             if (_pathResolver is not null)
-            {
-                throw new InvalidOperationException("IPathResolver is already set. Please check Markdown.Avalonia plugins");
-            }
+                throw new InvalidOperationException(
+                    "IPathResolver is already set. Please check Markdown.Avalonia plugins");
 
             _pathResolver = resolver;
         }
@@ -251,10 +247,7 @@ namespace Markdown.Avalonia.Plugins
                 asm = Assembly.Load(BuiltinAsmNm);
 
                 var type = asm.GetType(BuiltinTpNm);
-                if (type != null && Activator.CreateInstance(type) is IMdAvPlugin plugin)
-                {
-                    plugin.Setup(this);
-                }
+                if (type != null && Activator.CreateInstance(type) is IMdAvPlugin plugin) plugin.Setup(this);
             }
             catch
             {
@@ -298,7 +291,10 @@ namespace Markdown.Avalonia.Plugins
         }
 
 
-        public CImage LoadImage(string urlTxt) => _imageLoader.Load(urlTxt);
+        public CImage LoadImage(string urlTxt)
+        {
+            return _imageLoader.Load(urlTxt);
+        }
 
 
         internal void CheckChangeable()
@@ -308,9 +304,10 @@ namespace Markdown.Avalonia.Plugins
         }
 
 
-        class BlockParserOverride : BlockParser
+        private class BlockParserOverride : BlockParser
         {
-            private IBlockOverride _overrider;
+            private readonly IBlockOverride _overrider;
+
             public BlockParserOverride(Regex pattern, string name, IBlockOverride overrider) : base(pattern, name)
             {
                 _overrider = overrider;
@@ -322,32 +319,33 @@ namespace Markdown.Avalonia.Plugins
                 ParseStatus status,
                 IMarkdownEngine engine,
                 out int parseTextBegin, out int parseTextEnd)
-            => _overrider.Convert(text, firstMatch, status, engine, out parseTextBegin, out parseTextEnd);
+            {
+                return _overrider.Convert(text, firstMatch, status, engine, out parseTextBegin, out parseTextEnd);
+            }
         }
 
-        class ImageLoader
+        private class ImageLoader
         {
-            private SetupInfo _setupInfo;
-            private Dictionary<string, WeakReference<IImage>> _cache;
-            private Lazy<Bitmap> _imageNotFound;
-
-#pragma warning disable CS0618
-            public IBitmapLoader? BitmapLoader { get; set; }
-#pragma warning restore CS0618
+            private readonly Dictionary<string, WeakReference<IImage>> _cache;
+            private readonly Lazy<Bitmap> _imageNotFound;
+            private readonly SetupInfo _setupInfo;
 
 
             public ImageLoader(SetupInfo info)
             {
                 _setupInfo = info;
-                _cache = new();
+                _cache = new Dictionary<string, WeakReference<IImage>>();
 
                 _imageNotFound = new Lazy<Bitmap>(() =>
                 {
-                    using var strm = AssetLoader.Open(new Uri($"avares://Markdown.Avalonia/Assets/ImageNotFound.bmp"));
+                    using var strm = AssetLoader.Open(new Uri("avares://Markdown.Avalonia/Assets/ImageNotFound.bmp"));
                     return new Bitmap(strm);
                 });
-
             }
+
+#pragma warning disable CS0618
+            public IBitmapLoader? BitmapLoader { get; set; }
+#pragma warning restore CS0618
 
             public CImage Load(string urlTxt)
             {
@@ -355,25 +353,21 @@ namespace Markdown.Avalonia.Plugins
                 {
                     return new CImage(cachedBitmap ?? _imageNotFound.Value);
                 }
-                else
-                {
 #pragma warning disable CS0618
-                    var imageTask = BitmapLoader is not null ?
-                        Task.Run(() => (IImage?)BitmapLoader?.Get(urlTxt)) :
+                var imageTask = BitmapLoader is not null
+                    ? Task.Run(() => (IImage?)BitmapLoader?.Get(urlTxt))
+                    :
 #pragma warning restore CS0618
-                        LoadImageByPlugin(urlTxt);
+                    LoadImageByPlugin(urlTxt);
 
-                    return new CImage(imageTask, _imageNotFound.Value);
-                }
+                return new CImage(imageTask, _imageNotFound.Value);
             }
 
             private async Task<IImage?> LoadImageByPlugin(string urlTxt)
             {
                 foreach (var key in _cache.Keys.ToArray())
-                {
                     if (_cache[key].TryGetTarget(out var _))
                         _cache.Remove(key);
-                }
 
 
                 var streamTask = _setupInfo.PathResolver.ResolveImageResource(urlTxt);

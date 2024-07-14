@@ -15,7 +15,7 @@ namespace Markdown.Avalonia
         UpperLatin,
         UpperRoman,
 
-        Square,
+        Square
     }
 
     public static class MarkdownStyleExt
@@ -40,7 +40,7 @@ namespace Markdown.Avalonia
                     return "❏";
 
                 case TextMarkerStyle.Decimal:
-                    return (index + 1).ToString() + ".";
+                    return (index + 1) + ".";
 
                 case TextMarkerStyle.LowerLatin:
                     return NumberToOrder.ToLatin(index + 1).ToLower() + ".";

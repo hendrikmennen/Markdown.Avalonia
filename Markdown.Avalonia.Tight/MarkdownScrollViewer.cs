@@ -1,4 +1,9 @@
-﻿using Avalonia;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Metadata;
@@ -7,11 +12,6 @@ using Avalonia.Styling;
 using Markdown.Avalonia.Plugins;
 using Markdown.Avalonia.StyleCollections;
 using Markdown.Avalonia.Utils;
-using System;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using MdStyle = Markdown.Avalonia.MarkdownStyle;
 
 namespace Markdown.Avalonia
@@ -55,7 +55,7 @@ namespace Markdown.Avalonia
         public static readonly StyledProperty<bool> SaveScrollValueWhenContentUpdatedProperty =
             AvaloniaProperty.Register<MarkdownScrollViewer, bool>(
                 nameof(SaveScrollValueWhenContentUpdated),
-                defaultValue: false);
+                false);
 
         public static readonly AvaloniaProperty<Vector> ScrollValueProperty =
             AvaloniaProperty.RegisterDirect<MarkdownScrollViewer, Vector>(
@@ -67,7 +67,23 @@ namespace Markdown.Avalonia
         private static readonly HttpClient _httpclient = new();
 
         private readonly ScrollViewer _viewer;
+
+        private string? _AssetPathRoot;
+
+        private IMarkdownEngine _engine;
+
+        private string? _markdown;
+
+        private IStyle _markdownStyle;
+
+        private string? _markdownStyleName;
+
+        private MdAvPlugins _plugins;
         private SetupInfo _setup;
+
+        private Uri? _source;
+
+        private bool _useResource;
 
         public MarkdownScrollViewer()
         {
@@ -101,14 +117,15 @@ namespace Markdown.Avalonia
                 _markdownStyleName = nameof(MdStyle.Standard);
                 _markdownStyle = MdStyle.Standard;
             }
+
             Styles.Insert(0, _markdownStyle);
 
-            _viewer = new ScrollViewer()
+            _viewer = new ScrollViewer
             {
                 // TODO: ScrollViewer does not seem to take Padding into account in 11.0.0-preview1
                 Padding = new Thickness(0),
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
 
             ((ISetLogicalParent)_viewer).SetParent(this);
@@ -117,36 +134,12 @@ namespace Markdown.Avalonia
 
             EditStyle(_markdownStyle);
 
-            static bool nvl(bool? vl) => vl.HasValue && vl.Value;
-        }
-
-        private void EditStyle(IStyle mdstyle)
-        {
-            if (mdstyle is INamedStyle nameStyle && !nameStyle.IsEditted
-             && mdstyle is Styles styles)
+            static bool nvl(bool? vl)
             {
-                foreach (var edit in _setup.StyleEdits)
-                    edit.Edit(nameStyle.Name, styles);
-
-                nameStyle.IsEditted = true;
+                return vl.HasValue && vl.Value;
             }
         }
 
-        private void UpdateMarkdown()
-        {
-            if(_viewer.Content is null && String.IsNullOrEmpty(Markdown))
-                return;
-
-            var doc = Engine.Transform(Markdown ?? "");
-
-            var ofst = _viewer.Offset;
-            _viewer.Content = doc;
-
-            if (SaveScrollValueWhenContentUpdated)
-                _viewer.Offset = ofst;
-        }
-
-        private IMarkdownEngine _engine;
         public IMarkdownEngine Engine
         {
             set
@@ -166,7 +159,6 @@ namespace Markdown.Avalonia
             get => _engine;
         }
 
-        private string? _AssetPathRoot;
         public string? AssetPathRoot
         {
             set
@@ -182,23 +174,23 @@ namespace Markdown.Avalonia
 
         public bool SaveScrollValueWhenContentUpdated
         {
-            set { SetValue(SaveScrollValueWhenContentUpdatedProperty, value); }
-            get { return GetValue(SaveScrollValueWhenContentUpdatedProperty); }
+            set => SetValue(SaveScrollValueWhenContentUpdatedProperty, value);
+            get => GetValue(SaveScrollValueWhenContentUpdatedProperty);
         }
 
         public Vector ScrollValue
         {
-            set { _viewer.Offset = value; }
-            get { return _viewer.Offset; }
+            set => _viewer.Offset = value;
+            get => _viewer.Offset;
         }
 
         [Content]
         public string? HereMarkdown
         {
-            get { return Markdown; }
+            get => Markdown;
             set
             {
-                if (String.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                 {
                     Markdown = value;
                 }
@@ -210,20 +202,20 @@ namespace Markdown.Avalonia
                     var lines = Regex.Split(value, "\r\n|\r|\n", RegexOptions.Multiline);
 
                     // count last line indent
-                    int lastIdtCnt = TextUtil.CountIndent(lines.Last());
+                    var lastIdtCnt = TextUtil.CountIndent(lines.Last());
                     // count full indent
-                    int someIdtCnt = lines
-                        .Where(line => !String.IsNullOrWhiteSpace(line))
+                    var someIdtCnt = lines
+                        .Where(line => !string.IsNullOrWhiteSpace(line))
                         .Select(line => TextUtil.CountIndent(line))
                         .Min();
 
                     var indentCount = Math.Max(lastIdtCnt, someIdtCnt);
 
-                    Markdown = String.Join(
+                    Markdown = string.Join(
                         "\n",
                         lines
                             // skip first blank line
-                            .Skip(String.IsNullOrWhiteSpace(lines[0]) ? 1 : 0)
+                            .Skip(string.IsNullOrWhiteSpace(lines[0]) ? 1 : 0)
                             // strip indent
                             .Select(line =>
                             {
@@ -243,33 +235,31 @@ namespace Markdown.Avalonia
                                         realIdx += 1;
                                         viewIdx = ((viewIdx >> 2) + 1) << 2;
                                     }
-                                    else break;
+                                    else
+                                    {
+                                        break;
+                                    }
                                 }
 
                                 return line.Substring(realIdx);
                             })
-                        );
+                    );
                 }
             }
         }
 
-        private string? _markdown;
         public string? Markdown
         {
-            get { return _markdown; }
+            get => _markdown;
             set
             {
-                if (SetAndRaise(MarkdownDirectProperty, ref _markdown, value))
-                {
-                    UpdateMarkdown();
-                }
+                if (SetAndRaise(MarkdownDirectProperty, ref _markdown, value)) UpdateMarkdown();
             }
         }
 
-        private Uri? _source;
         public Uri? Source
         {
-            get { return _source; }
+            get => _source;
             set
             {
                 if (!SetAndRaise(SourceDirectProperty, ref _source, value))
@@ -294,19 +284,28 @@ namespace Markdown.Avalonia
                         using (var res = _httpclient.GetAsync(_source).Result)
                         using (var strm = res.Content.ReadAsStreamAsync().Result)
                         using (var reader = new StreamReader(strm, true))
+                        {
                             Markdown = reader.ReadToEnd();
+                        }
+
                         break;
 
                     case "file":
                         using (var strm = File.OpenRead(_source.LocalPath))
                         using (var reader = new StreamReader(strm, true))
+                        {
                             Markdown = reader.ReadToEnd();
+                        }
+
                         break;
 
                     case "avares":
                         using (var strm = AssetLoader.Open(_source))
                         using (var reader = new StreamReader(strm, true))
+                        {
                             Markdown = reader.ReadToEnd();
+                        }
+
                         break;
 
                     default:
@@ -314,16 +313,13 @@ namespace Markdown.Avalonia
                 }
 
                 AssetPathRoot =
-                    value.Scheme == "file" ?
-                    value.LocalPath :
-                    value.AbsoluteUri;
+                    value.Scheme == "file" ? value.LocalPath : value.AbsoluteUri;
             }
         }
 
-        private IStyle _markdownStyle;
         public IStyle MarkdownStyle
         {
-            get { return _markdownStyle; }
+            get => _markdownStyle;
             set
             {
                 if (value is null)
@@ -345,10 +341,9 @@ namespace Markdown.Avalonia
             }
         }
 
-        private string? _markdownStyleName;
         public string? MarkdownStyleName
         {
-            get { return _markdownStyleName; }
+            get => _markdownStyleName;
             set
             {
                 _markdownStyleName = value;
@@ -372,11 +367,13 @@ namespace Markdown.Avalonia
                     MarkdownStyle = propVal;
                 }
 
-                static bool nvl(bool? vl) => vl.HasValue && vl.Value;
+                static bool nvl(bool? vl)
+                {
+                    return vl.HasValue && vl.Value;
+                }
             }
         }
 
-        private MdAvPlugins _plugins;
         public MdAvPlugins Plugins
         {
             get => _plugins;
@@ -390,7 +387,6 @@ namespace Markdown.Avalonia
             }
         }
 
-        private bool _useResource;
         public bool UseResource
         {
             get => _useResource;
@@ -400,6 +396,32 @@ namespace Markdown.Avalonia
                 _useResource = value;
                 UpdateMarkdown();
             }
+        }
+
+        private void EditStyle(IStyle mdstyle)
+        {
+            if (mdstyle is INamedStyle nameStyle && !nameStyle.IsEditted
+                                                 && mdstyle is Styles styles)
+            {
+                foreach (var edit in _setup.StyleEdits)
+                    edit.Edit(nameStyle.Name, styles);
+
+                nameStyle.IsEditted = true;
+            }
+        }
+
+        private void UpdateMarkdown()
+        {
+            if (_viewer.Content is null && string.IsNullOrEmpty(Markdown))
+                return;
+
+            var doc = Engine.Transform(Markdown ?? "");
+
+            var ofst = _viewer.Offset;
+            _viewer.Content = doc;
+
+            if (SaveScrollValueWhenContentUpdated)
+                _viewer.Offset = ofst;
         }
 
         //public void ResetContent()

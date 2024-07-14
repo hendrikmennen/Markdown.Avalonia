@@ -1,8 +1,9 @@
 Markdown.Avalonia render Markdown with avalonia ui. It transform markdown to controls (ex: Border, Grid, TextBlock).
 
-There is no syntax highlighting for code blocks in this package. If you want syntax highlighting, use [Markdown.Avalonia](https://www.nuget.org/packages/Markdown.Avalonia) instead.
+There is no syntax highlighting for code blocks in this package. If you want syntax highlighting,
+use [Markdown.Avalonia](https://www.nuget.org/packages/Markdown.Avalonia) instead.
 
-**How to use**  
+**How to use**
 
 Markdown.Avalonia supports three methods to render markdown.
 

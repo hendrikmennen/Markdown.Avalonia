@@ -16,7 +16,7 @@ namespace ColorTextBlock.Avalonia
         {
             var txt = (string)value;
             txt = Regex.Replace(txt, "[\r\n \t]+", " ");
-            return new CRun() { Text = String.IsNullOrEmpty(txt) ? " " : txt };
+            return new CRun { Text = string.IsNullOrEmpty(txt) ? " " : txt };
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using Avalonia.Controls;
 using ColorTextBlock.Avalonia;
 using Markdown.Avalonia.Parsers;
 using Markdown.Avalonia.Utils;
-using System.Windows.Input;
 
 namespace Markdown.Avalonia
 {
@@ -14,7 +14,8 @@ namespace Markdown.Avalonia
 
         ICommand? HyperlinkCommand { get; set; }
 
-        [Obsolete("Please use Plugins propety. see https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-migrages-to-ver11")]
+        [Obsolete(
+            "Please use Plugins propety. see https://github.com/whistyun/Markdown.Avalonia/wiki/How-to-migrages-to-ver11")]
         IBitmapLoader? BitmapLoader { get; set; }
 
         IContainerBlockHandler? ContainerBlockHandler { get; set; }

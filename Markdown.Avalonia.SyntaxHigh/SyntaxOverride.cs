@@ -1,33 +1,24 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
 using AvaloniaEdit;
-using Markdown.Avalonia.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using Avalonia;
-using System.Collections.ObjectModel;
-using Markdown.Avalonia.SyntaxHigh.Extensions;
-using Markdown.Avalonia.Parsers;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
-using Avalonia.Metadata;
 using AvaloniaEdit.TextMate;
-using TextMateSharp.Grammars;
+using Markdown.Avalonia.Parsers;
+using Markdown.Avalonia.Plugins;
 using TextMateSharp.Themes;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
     public class SyntaxOverride : IBlockOverride
     {
-        private SyntaxHighlightProvider _provider;
-        private SetupInfo _info;
-        
         public static IRawTheme? CurrentEditorTheme;
         public static IAdvancedRegistryOptions? RegistryOptions;
-        public string ParserName => "CodeBlocksWithLangEvaluator";
+        private readonly SetupInfo _info;
+        private SyntaxHighlightProvider _provider;
 
 
         public SyntaxOverride(ObservableCollection<Alias> aliases, SetupInfo info)
@@ -35,6 +26,8 @@ namespace Markdown.Avalonia.SyntaxHigh
             _provider = new SyntaxHighlightProvider(aliases);
             _info = info;
         }
+
+        public string ParserName => "CodeBlocksWithLangEvaluator";
 
         public IEnumerable<Control>? Convert(
             string text,
@@ -65,17 +58,17 @@ namespace Markdown.Avalonia.SyntaxHigh
 
             parseTextBegin = match.Index;
 
-            string code = text.Substring(match.Index + match.Length, codeEndIndex - (match.Index + match.Length));
-            string lang = match.Groups[2].Value;
+            var code = text.Substring(match.Index + match.Length, codeEndIndex - (match.Index + match.Length));
+            var lang = match.Groups[2].Value;
 
             return Convert(lang, code);
         }
 
         private IEnumerable<Control> Convert(string lang, string code)
         {
-            if (String.IsNullOrEmpty(lang))
+            if (string.IsNullOrEmpty(lang))
             {
-                var ctxt = new TextBlock()
+                var ctxt = new TextBlock
                 {
                     Text = code,
                     TextWrapping = TextWrapping.NoWrap
@@ -102,7 +95,7 @@ namespace Markdown.Avalonia.SyntaxHigh
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     IsReadOnly = true
                 };
-                
+
                 txtEdit.Tag = lang;
 
                 if (RegistryOptions?.GetScopeByLanguageId(lang) is { } scope)
@@ -110,11 +103,8 @@ namespace Markdown.Avalonia.SyntaxHigh
                     var textMate = txtEdit.InstallTextMate(RegistryOptions);
                     textMate.SetGrammar(scope);
                     textMate.SetTheme(CurrentEditorTheme ?? RegistryOptions.GetDefaultTheme());
-                
-                    txtEdit.DetachedFromVisualTree += (_, _) =>
-                    {
-                        textMate.Dispose();
-                    };
+
+                    txtEdit.DetachedFromVisualTree += (_, _) => { textMate.Dispose(); };
                 }
 
                 var result = new Border();

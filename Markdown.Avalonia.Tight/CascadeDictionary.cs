@@ -1,8 +1,7 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Cryptography;
+using Avalonia;
+using Avalonia.Controls;
 
 namespace Markdown.Avalonia
 {

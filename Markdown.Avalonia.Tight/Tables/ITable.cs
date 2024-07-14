@@ -2,7 +2,7 @@
 
 namespace Markdown.Avalonia.Tables
 {
-    interface ITable
+    internal interface ITable
     {
         List<ITableCell> Header { get; }
         List<List<ITableCell>> Details { get; }
@@ -10,4 +10,3 @@ namespace Markdown.Avalonia.Tables
         int RowCount { get; }
     }
 }
-

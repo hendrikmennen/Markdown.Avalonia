@@ -2,7 +2,7 @@
 
 namespace Markdown.Avalonia.Utils
 {
-    static class Helper
+    internal static class Helper
     {
         public static void ThrowInvalidOperation(string msg)
         {

@@ -1,27 +1,27 @@
-﻿using Avalonia;
+﻿using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Controls;
 using ColorTextBlock.Avalonia.Geometies;
 using ColorTextBlock.Avalonia.Geometries;
-using System;
-using System.Collections.Generic;
 
 namespace ColorTextBlock.Avalonia
 {
     /// <summary>
-    /// Places a control as an inline element.
+    ///     Places a control as an inline element.
     /// </summary>
     public class CInlineUIContainer : CInline
     {
-        /// <summary>
-        /// A displayed control
-        /// </summary>
-        public Control? Content { get; set; }
-        internal DummyGeometryForControl? Indicator { get; private set; }
-
         public CInlineUIContainer(Control content)
         {
             Content = content;
         }
+
+        /// <summary>
+        ///     A displayed control
+        /// </summary>
+        public Control? Content { get; set; }
+
+        internal DummyGeometryForControl? Indicator { get; private set; }
 
         protected override IEnumerable<CGeometry> MeasureOverride(double entireWidth, double remainWidth)
         {
@@ -31,22 +31,23 @@ namespace ColorTextBlock.Avalonia
                 return new CGeometry[0];
             }
 
-            Content.Measure(new Size(remainWidth, Double.PositiveInfinity));
+            Content.Measure(new Size(remainWidth, double.PositiveInfinity));
 
             if (Content.DesiredSize.Width > remainWidth)
             {
-                Content.Measure(new Size(entireWidth, Double.PositiveInfinity));
+                Content.Measure(new Size(entireWidth, double.PositiveInfinity));
                 Indicator = new DummyGeometryForControl(Content, TextVerticalAlignment);
                 return new CGeometry[] { new LineBreakMarkGeometry(this), Indicator };
             }
-            else
-            {
-                Indicator = new DummyGeometryForControl(Content, TextVerticalAlignment);
-                return new[] { Indicator };
-            }
+
+            Indicator = new DummyGeometryForControl(Content, TextVerticalAlignment);
+            return new[] { Indicator };
         }
 
-        /// <inheritdoc/>
-        public override string AsString() => String.Empty;
+        /// <inheritdoc />
+        public override string AsString()
+        {
+            return string.Empty;
+        }
     }
 }

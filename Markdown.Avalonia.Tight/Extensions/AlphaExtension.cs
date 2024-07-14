@@ -1,25 +1,27 @@
-﻿using Avalonia.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace Markdown.Avalonia.Extensions
 {
     public class AlphaExtension : MarkupExtension
     {
-        private readonly string _brushName;
         private readonly float _alpha;
+        private readonly string _brushName;
 
-        public AlphaExtension(string colorKey) : this(colorKey, 1f) { }
+        public AlphaExtension(string colorKey) : this(colorKey, 1f)
+        {
+        }
 
         public AlphaExtension(string colorKey, float alpha)
         {
-            this._brushName = colorKey;
-            this._alpha = alpha;
+            _brushName = colorKey;
+            _alpha = alpha;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
@@ -28,21 +30,21 @@ namespace Markdown.Avalonia.Extensions
 
             var brush = dyExt.ProvideValue(serviceProvider);
 
-            return new MultiBinding()
+            return new MultiBinding
             {
-                Bindings = new IBinding[] { brush },
+                Bindings = new[] { brush },
                 Converter = new AlphaConverter(_alpha)
             };
         }
 
-        class AlphaConverter : IMultiValueConverter
+        private class AlphaConverter : IMultiValueConverter
         {
-            public float Alpha { get; }
-
             public AlphaConverter(float alpha)
             {
                 Alpha = alpha;
             }
+
+            public float Alpha { get; }
 
             public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
             {
@@ -55,9 +57,9 @@ namespace Markdown.Avalonia.Extensions
                     return values[0];
 
                 return new SolidColorBrush(
-                            Color.FromArgb(
-                                (byte)(c.A / 255f * Alpha * 255f),
-                                c.R, c.G, c.B));
+                    Color.FromArgb(
+                        (byte)(c.A / 255f * Alpha * 255f),
+                        c.R, c.G, c.B));
             }
         }
     }

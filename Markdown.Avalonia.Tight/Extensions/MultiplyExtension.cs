@@ -1,10 +1,10 @@
-﻿using Avalonia.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace Markdown.Avalonia.Extensions
 {
@@ -13,12 +13,14 @@ namespace Markdown.Avalonia.Extensions
         private readonly string _resourceKey;
         private readonly double _scale;
 
-        public MultiplyExtension(string resourceKey) : this(resourceKey, 1) { }
+        public MultiplyExtension(string resourceKey) : this(resourceKey, 1)
+        {
+        }
 
         public MultiplyExtension(string resourceKey, double scale)
         {
-            this._resourceKey = resourceKey;
-            this._scale = scale;
+            _resourceKey = resourceKey;
+            _scale = scale;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
@@ -27,21 +29,21 @@ namespace Markdown.Avalonia.Extensions
 
             var brush = dyExt.ProvideValue(serviceProvider);
 
-            return new MultiBinding()
+            return new MultiBinding
             {
-                Bindings = new IBinding[] { brush },
+                Bindings = new[] { brush },
                 Converter = new MultiplyConverter(_scale)
             };
         }
 
-        class MultiplyConverter : IMultiValueConverter
+        private class MultiplyConverter : IMultiValueConverter
         {
-            public double Scale { get; }
-
             public MultiplyConverter(double scale)
             {
                 Scale = scale;
             }
+
+            public double Scale { get; }
 
             public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
             {
@@ -51,8 +53,8 @@ namespace Markdown.Avalonia.Extensions
                     int i => (int)(i * Scale),
                     long l => (long)(l * Scale),
                     float f => (float)(f * Scale),
-                    double d => (double)(d * Scale),
-                    _ => values[0],
+                    double d => d * Scale,
+                    _ => values[0]
                 };
             }
         }

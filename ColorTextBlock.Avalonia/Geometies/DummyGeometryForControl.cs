@@ -6,8 +6,6 @@ namespace ColorTextBlock.Avalonia.Geometies
 {
     internal class DummyGeometryForControl : CGeometry
     {
-        public Control Control { get; }
-
         public DummyGeometryForControl(Control control, TextVerticalAlignment alignment) :
             base(
                 control.DesiredSize.Width,
@@ -18,6 +16,8 @@ namespace ColorTextBlock.Avalonia.Geometies
         {
             Control = control;
         }
+
+        public Control Control { get; }
 
         public override void Render(DrawingContext ctx)
         {

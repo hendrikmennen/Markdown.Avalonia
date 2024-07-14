@@ -2,7 +2,7 @@
 {
     public struct ParseStatus
     {
-        public static readonly ParseStatus Init = new ParseStatus(true);
+        public static readonly ParseStatus Init = new(true);
 
         public bool SupportTextAlignment { get; }
 

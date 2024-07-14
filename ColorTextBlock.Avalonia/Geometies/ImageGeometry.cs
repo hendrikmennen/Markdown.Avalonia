@@ -1,22 +1,21 @@
 ﻿using Avalonia;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
 
 namespace ColorTextBlock.Avalonia.Geometries
 {
     public class ImageGeometry : CGeometry
     {
-        public new double Width { get; }
-        public new double Height { get; }
-        public IImage Image { get; }
-
         internal ImageGeometry(IImage image, double width, double height,
             TextVerticalAlignment alignment) : base(width, height, height, alignment, false)
         {
-            this.Image = image;
-            this.Width = width;
-            this.Height = height;
+            Image = image;
+            Width = width;
+            Height = height;
         }
+
+        public new double Width { get; }
+        public new double Height { get; }
+        public IImage Image { get; }
 
         public override void Render(DrawingContext ctx)
         {

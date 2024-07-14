@@ -9,13 +9,15 @@ namespace ColorTextBlock.Avalonia.Geometries
             double lineHeight) :
             base(owner, 0, lineHeight, lineHeight, TextVerticalAlignment.Base, true)
         {
-
         }
+
         internal LineBreakMarkGeometry(CInline owner) :
             base(owner, 0, 0, 0, TextVerticalAlignment.Base, true)
         {
         }
 
-        public override void Render(DrawingContext ctx) { }
+        public override void Render(DrawingContext ctx)
+        {
+        }
     }
 }

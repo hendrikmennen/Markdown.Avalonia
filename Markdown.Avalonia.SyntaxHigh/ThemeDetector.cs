@@ -4,7 +4,7 @@ using Avalonia.Styling;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
-    static class ThemeDetector
+    internal static class ThemeDetector
     {
         private static readonly string s_SimpleThemeFQCN = "Avalonia.Themes.Simple.SimpleTheme";
         private static readonly string s_FluentThemeFQCN = "Avalonia.Themes.Fluent.FluentTheme";
@@ -16,49 +16,6 @@ namespace Markdown.Avalonia.SyntaxHigh
         private static bool? s_isSimpleUsed;
         private static bool? s_isFluentUsed;
 
-        private static bool CheckStyleSourceHost(IStyle style, string hostName)
-        {
-            if (style is StyleInclude incld)
-            {
-                var uri = incld.Source;
-
-                if (uri is null) return false;
-                if (!uri.IsAbsoluteUri) return false;
-
-                try { return uri.Host == hostName; }
-                catch { return false; }
-            }
-            else return false;
-        }
-
-        private static bool? CheckApplicationCurrentStyle(string themeFQCN, string avaresHost)
-        {
-            if (Application.Current is null
-                    || Application.Current.Styles is null)
-                return null;
-
-            foreach (var style in Application.Current.Styles)
-            {
-                if (style.GetType().FullName == themeFQCN)
-                {
-                    return true;
-                }
-                if (style is StyleInclude incld)
-                {
-                    var uri = incld.Source;
-
-                    if (uri is null) return false;
-                    if (!uri.IsAbsoluteUri) return false;
-
-                    try { return uri.Host == avaresHost; }
-                    catch { return false; }
-                }
-                else return false;
-            }
-
-            return false;
-        }
-
         public static bool IsAvalonEditSetup
         {
             get
@@ -67,16 +24,12 @@ namespace Markdown.Avalonia.SyntaxHigh
                     return true;
 
                 if (Application.Current is null
-                        || Application.Current.Styles is null)
+                    || Application.Current.Styles is null)
                     return false;
 
                 foreach (var style in Application.Current.Styles)
-                {
                     if (CheckStyleSourceHost(style, "AvaloniaEdit"))
-                    {
                         return _isAvalonEditSetup = true;
-                    }
-                }
 
                 return _isAvalonEditSetup = false;
             }
@@ -104,6 +57,63 @@ namespace Markdown.Avalonia.SyntaxHigh
             }
         }
 
-        private static bool Nvl(bool? val) => val.HasValue && val.Value;
+        private static bool CheckStyleSourceHost(IStyle style, string hostName)
+        {
+            if (style is StyleInclude incld)
+            {
+                var uri = incld.Source;
+
+                if (uri is null) return false;
+                if (!uri.IsAbsoluteUri) return false;
+
+                try
+                {
+                    return uri.Host == hostName;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool? CheckApplicationCurrentStyle(string themeFQCN, string avaresHost)
+        {
+            if (Application.Current is null
+                || Application.Current.Styles is null)
+                return null;
+
+            foreach (var style in Application.Current.Styles)
+            {
+                if (style.GetType().FullName == themeFQCN) return true;
+                if (style is StyleInclude incld)
+                {
+                    var uri = incld.Source;
+
+                    if (uri is null) return false;
+                    if (!uri.IsAbsoluteUri) return false;
+
+                    try
+                    {
+                        return uri.Host == avaresHost;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
+        private static bool Nvl(bool? val)
+        {
+            return val.HasValue && val.Value;
+        }
     }
 }

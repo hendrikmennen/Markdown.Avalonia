@@ -3,7 +3,7 @@ using Avalonia.Styling;
 
 namespace Markdown.Avalonia.SyntaxHigh.StyleCollections
 {
-    class AppendixOfFluentAvalonia : Styles
+    internal class AppendixOfFluentAvalonia : Styles
     {
         public AppendixOfFluentAvalonia()
         {

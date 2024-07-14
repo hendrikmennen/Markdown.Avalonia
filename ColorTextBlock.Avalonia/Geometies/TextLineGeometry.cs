@@ -1,17 +1,13 @@
-﻿using Avalonia;
+﻿using System;
+using System.Linq;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
-using System;
-using System.Linq;
 
 namespace ColorTextBlock.Avalonia.Geometries
 {
     internal class CTextLayout
     {
-        public string Text { get; }
-        public Typeface Typeface { get; }
-        public double FontSize { get; }
-
         private TextLayout _layout;
 
         public CTextLayout(string text, Typeface typeface, double fontSize, IBrush? foreground, TextLayout result)
@@ -30,24 +26,20 @@ namespace ColorTextBlock.Avalonia.Geometries
             FontSize = fontSize;
 
             _layout = new TextLayout(
-                            Text,
-                            Typeface, FontSize,
-                            foreground,
-                            textWrapping: TextWrapping.Wrap,
-                            maxWidth: maxWidth);
+                Text,
+                Typeface, FontSize,
+                foreground,
+                textWrapping: TextWrapping.Wrap,
+                maxWidth: maxWidth);
         }
+
+        public string Text { get; }
+        public Typeface Typeface { get; }
+        public double FontSize { get; }
     }
 
     internal class CTextLine
     {
-        public string Text { get; }
-        public Typeface Typeface { get; }
-        public double FontSize { get; }
-
-        public double WidthIncludingTrailingWhitespace => _result.WidthIncludingTrailingWhitespace;
-        public double Height => _result.Height;
-        public double BaseHeight => _result.Baseline;
-
         private TextLine _result;
 
         public CTextLine(string text, Typeface typeface, double fontSize, TextLine result)
@@ -58,20 +50,28 @@ namespace ColorTextBlock.Avalonia.Geometries
             _result = result;
         }
 
+        public string Text { get; }
+        public Typeface Typeface { get; }
+        public double FontSize { get; }
+
+        public double WidthIncludingTrailingWhitespace => _result.WidthIncludingTrailingWhitespace;
+        public double Height => _result.Height;
+        public double BaseHeight => _result.Baseline;
+
         public void SetForegroundBrush(IBrush? foreground)
         {
             var layout = new TextLayout(Text, Typeface, FontSize, foreground);
             _result = layout.TextLines.First();
         }
 
-        public void Draw(DrawingContext ctx, Point point) => _result.Draw(ctx, point);
+        public void Draw(DrawingContext ctx, Point point)
+        {
+            _result.Draw(ctx, point);
+        }
     }
 
     internal class TextLineGeometry : TextGeometry
     {
-        private CTextLine Line { set; get; }
-        private IBrush? LayoutForeground { set; get; }
-
         internal TextLineGeometry(
             CInline owner,
             CTextLine tline,
@@ -84,16 +84,19 @@ namespace ColorTextBlock.Avalonia.Geometries
         }
 
         internal TextLineGeometry(
-                TextLineGeometry baseGeometry,
-                bool linebreak) :
+            TextLineGeometry baseGeometry,
+            bool linebreak) :
             base(baseGeometry.Owner,
-                 baseGeometry.Width, baseGeometry.Height, baseGeometry.BaseHeight,
-                 baseGeometry.TextVerticalAlignment,
-                 linebreak)
+                baseGeometry.Width, baseGeometry.Height, baseGeometry.BaseHeight,
+                baseGeometry.TextVerticalAlignment,
+                linebreak)
         {
             Line = baseGeometry.Line;
             LayoutForeground = baseGeometry.LayoutForeground;
         }
+
+        private CTextLine Line { get; }
+        private IBrush? LayoutForeground { set; get; }
 
         public override void Render(DrawingContext ctx)
         {
@@ -106,10 +109,7 @@ namespace ColorTextBlock.Avalonia.Geometries
                 Line.SetForegroundBrush(LayoutForeground);
             }
 
-            if (background != null)
-            {
-                ctx.FillRectangle(background, new Rect(Left, Top, Width, Height));
-            }
+            if (background != null) ctx.FillRectangle(background, new Rect(Left, Top, Width, Height));
 
             Line.Draw(ctx, new Point(Left, Top));
 

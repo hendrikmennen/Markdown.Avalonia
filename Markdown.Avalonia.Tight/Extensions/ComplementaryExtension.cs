@@ -1,12 +1,12 @@
-﻿using Avalonia.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using Avalonia.Media;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 namespace Markdown.Avalonia.Extensions
 {
@@ -16,7 +16,7 @@ namespace Markdown.Avalonia.Extensions
 
         public ComplementaryExtension(string colorKey)
         {
-            this._brushName = colorKey;
+            _brushName = colorKey;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
@@ -25,17 +25,15 @@ namespace Markdown.Avalonia.Extensions
 
             var brush = dyExt.ProvideValue(serviceProvider);
 
-            return new MultiBinding()
+            return new MultiBinding
             {
-                Bindings = new IBinding[] { brush },
+                Bindings = new[] { brush },
                 Converter = new ComplementaryConverter()
             };
         }
 
-        class ComplementaryConverter : IMultiValueConverter
+        private class ComplementaryConverter : IMultiValueConverter
         {
-            public ComplementaryConverter() { }
-
             public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
             {
                 Color c;
@@ -51,11 +49,11 @@ namespace Markdown.Avalonia.Extensions
                 var s = rgb.Max() + rgb.Min();
 
                 return new SolidColorBrush(
-                            Color.FromArgb(
-                                c.A,
-                                (byte)(s - c.R),
-                                (byte)(s - c.G),
-                                (byte)(s - c.B)));
+                    Color.FromArgb(
+                        c.A,
+                        (byte)(s - c.R),
+                        (byte)(s - c.G),
+                        (byte)(s - c.B)));
             }
         }
     }

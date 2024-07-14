@@ -1,7 +1,7 @@
-﻿using Avalonia.Collections;
+﻿using System.Text.RegularExpressions;
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Markdown.Avalonia.Utils;
-using System.Text.RegularExpressions;
 
 namespace Markdown.Avalonia
 {
@@ -13,16 +13,11 @@ namespace Markdown.Avalonia
             // This collect some character until "[", "(" or "{".
             var trimedBlockName = blockName.Trim();
             var match = Regex.Match(trimedBlockName, @"[\(\[\{]");
-            if (match.Success)
-            {
-                trimedBlockName = trimedBlockName.Substring(0, match.Index).Trim();
-            }
+            if (match.Success) trimedBlockName = trimedBlockName.Substring(0, match.Index).Trim();
 
-            if (this.TryGetValue(trimedBlockName, out var processor))
-            {
+            if (TryGetValue(trimedBlockName, out var processor))
                 return processor.ProvideControl(assetPathRoot, blockName, lines);
-            }
-            else return null;
+            return null;
         }
     }
 }

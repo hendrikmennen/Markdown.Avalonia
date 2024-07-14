@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Markdown.Avalonia
 {
-    static class NumberToOrder
+    internal static class NumberToOrder
     {
         public static string ToRoman(int number)
         {

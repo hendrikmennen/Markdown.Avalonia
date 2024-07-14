@@ -1,9 +1,9 @@
-﻿using Avalonia.Media;
-using System;
+﻿using System;
+using Avalonia.Media;
 
 namespace Markdown.Avalonia.SyntaxHigh.Extensions
 {
-    struct HSV
+    internal struct HSV
     {
         public int Hue;
         public byte Saturation;
@@ -13,7 +13,7 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
         {
             int max = Math.Max(color.R, Math.Max(color.G, color.B));
             int min = Math.Min(color.R, Math.Min(color.G, color.B));
-            int div = max - min;
+            var div = max - min;
 
             if (div == 0)
             {
@@ -23,9 +23,9 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
             else
             {
                 Hue =
-                        (min == color.B) ? 60 * (color.G - color.R) / div + 60 :
-                        (min == color.R) ? 60 * (color.B - color.G) / div + 180 :
-                                           60 * (color.R - color.B) / div + 300;
+                    min == color.B ? 60 * (color.G - color.R) / div + 60 :
+                    min == color.R ? 60 * (color.B - color.G) / div + 180 :
+                    60 * (color.R - color.B) / div + 300;
                 Saturation = (byte)div;
             }
 
@@ -34,19 +34,18 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
 
         public Color ToColor()
         {
-            if (Hue == 0 && Saturation == 0)
-            {
-                return Color.FromRgb(Value, Value, Value);
-            }
+            if (Hue == 0 && Saturation == 0) return Color.FromRgb(Value, Value, Value);
 
             //byte c = Saturation;
 
             // int HueInt = Hue / 60;
 
-            int x = (int)(Saturation * (1 - Math.Abs((Hue / 60f) % 2 - 1)));
+            var x = (int)(Saturation * (1 - Math.Abs(Hue / 60f % 2 - 1)));
 
             static Color FromRgb(int r, int g, int b)
-                => Color.FromRgb((byte)r, (byte)g, (byte)b);
+            {
+                return Color.FromRgb((byte)r, (byte)g, (byte)b);
+            }
 
 
             return (Hue / 60) switch
@@ -56,7 +55,7 @@ namespace Markdown.Avalonia.SyntaxHigh.Extensions
                 3 => FromRgb(Value - Saturation, Value - Saturation + x, Value),
                 4 => FromRgb(Value - Saturation + x, Value - Saturation, Value),
                 5 or 6 => FromRgb(Value, Value - Saturation, Value - Saturation + x),
-                _ => FromRgb(Value, Value - Saturation + x, Value - Saturation),
+                _ => FromRgb(Value, Value - Saturation + x, Value - Saturation)
             };
         }
     }

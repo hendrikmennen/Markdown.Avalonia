@@ -1,9 +1,9 @@
-﻿using Avalonia.Media;
-using Avalonia.Layout;
+﻿using Avalonia.Layout;
+using Avalonia.Media;
 
 namespace Markdown.Avalonia.Tables
 {
-    interface ITableCell
+    internal interface ITableCell
     {
         int ColumnIndex { get; }
 

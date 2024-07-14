@@ -7,9 +7,8 @@ namespace Markdown.Avalonia.Utils
 {
     public class DefaultHyperlinkCommand : ICommand
     {
-        public event EventHandler? CanExecuteChanged;
-
         private bool _isExecutable = true;
+
         public bool IsExecutable
         {
             get => _isExecutable;
@@ -22,6 +21,8 @@ namespace Markdown.Avalonia.Utils
                 }
             }
         }
+
+        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object? parameter)
         {

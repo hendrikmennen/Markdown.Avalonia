@@ -1,28 +1,19 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Remote.Protocol.Viewport;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
+using Avalonia;
+using Avalonia.Controls;
 
 namespace Markdown.Avalonia.Controls
 {
     public class AutoScaleColumnDefinitions : ColumnDefinitions
     {
         public static readonly AttachedProperty<bool> IsEnabledProperty =
-            AvaloniaProperty.RegisterAttached<AutoScaleColumnDefinitions, Grid, bool>("IsEnabled", false);
-
-        public static bool GetIsEnabled(Control control)
-            => control.GetValue(IsEnabledProperty);
-
-        public static void SetIsEnabled(Control control, bool value)
-            => control.SetValue(IsEnabledProperty, value);
+            AvaloniaProperty.RegisterAttached<AutoScaleColumnDefinitions, Grid, bool>("IsEnabled");
 
 
-        private int _columnCount;
-        private Grid _grid;
-        private bool _isAutoArrangeTried = false;
+        private readonly int _columnCount;
+        private readonly Grid _grid;
+        private bool _isAutoArrangeTried;
 
         public AutoScaleColumnDefinitions(int columnCount, Grid owner)
         {
@@ -33,6 +24,16 @@ namespace Markdown.Avalonia.Controls
                 Add(new ColumnDefinition(1, GridUnitType.Auto));
 
             _grid.LayoutUpdated += _grid_LayoutUpdated;
+        }
+
+        public static bool GetIsEnabled(Control control)
+        {
+            return control.GetValue(IsEnabledProperty);
+        }
+
+        public static void SetIsEnabled(Control control, bool value)
+        {
+            control.SetValue(IsEnabledProperty, value);
         }
 
         private void _grid_LayoutUpdated(object? sender, EventArgs e)
@@ -83,10 +84,7 @@ namespace Markdown.Avalonia.Controls
 
                     var adding = Math.Ceiling((requreWidth - consumedWid) / colspan);
 
-                    foreach (var i in Enumerable.Range(colidx, colspan))
-                    {
-                        width[i] += adding;
-                    }
+                    foreach (var i in Enumerable.Range(colidx, colspan)) width[i] += adding;
                 }
 
                 if (width.All(d => d != 0d)) break;
@@ -119,10 +117,9 @@ namespace Markdown.Avalonia.Controls
                 var unit = Enumerable.Repeat(GridUnitType.Star, width.Length).ToArray();
 
                 bool isShortabe;
-                double collect = (isShortabe = required > wealthy) ? wealthy : required;
+                var collect = (isShortabe = required > wealthy) ? wealthy : required;
 
                 for (var i = 0; i < width.Length; ++i)
-                {
                     if (width[i] < allowedColWid)
                     {
                         hold[i] -= collect * (allowedColWid - width[i]) / wealthy;
@@ -134,7 +131,6 @@ namespace Markdown.Avalonia.Controls
                     {
                         hold[i] += collect * (width[i] - allowedColWid) / required;
                     }
-                }
 
                 for (var i = 0; i < hold.Length; ++i)
                     Add(new ColumnDefinition(hold[i], unit[i]));
