@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\Markdown.Avalonia.props"/>
+
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <PackageId>OneWare.Markdown.Avalonia.SyntaxHigh</PackageId>
+        <Version>$(PackageVersion)</Version>
+        <Authors>whistyun</Authors>
+        <Copyright>Copyright (c) 2021 whistyun</Copyright>
+        <PackageProjectUrl>https://github.com/HendrikMennen/Markdown.Avalonia</PackageProjectUrl>
+        <PackageReadmeFile>Markdown.Avalonia.SyntaxHigh.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Company/>
+        <LangVersion>9</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\pack_readme\Markdown.Avalonia.SyntaxHigh.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Markdown.Avalonia.Tight\Markdown.Avalonia.Tight.csproj" PrivateAssets="All"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="OneWare.Essentials" Version="0.11.0" />
+    </ItemGroup>
+
+</Project>

@@ -32,17 +32,15 @@ namespace UnitTest.CTxt.Utils
             // FIXME: I have no idea to compare bitmap with Avalonia.Media.Imaging
             //        This logic use System.Drawing, So only run on Windows.
 
-            using (var approvedImg = new Bitmap(approvedPath))
-            using (var receivedImg = new Bitmap(receivedPath))
-            {
-                var approvedByte = BitmapToByte(approvedImg);
-                var receivedByte = BitmapToByte(receivedImg);
+            using var approvedImg = new Bitmap(approvedPath);
+            using var receivedImg = new Bitmap(receivedPath);
 
+            var approvedByte = BitmapToByte(approvedImg);
+            var receivedByte = BitmapToByte(receivedImg);
 
-                return !Compare(receivedByte, approvedByte) ?
-                        new ApprovalMismatchException(receivedPath, approvedPath) :
-                        null;
-            }
+            return !Compare(receivedByte, approvedByte) ?
+                    new ApprovalMismatchException(receivedPath, approvedPath) :
+                    null;
         }
 
 
@@ -66,7 +64,7 @@ namespace UnitTest.CTxt.Utils
             return bary;
         }
 
-        private static bool Compare(ICollection<byte> bytes1, ICollection<byte> bytes2)
+        private new static bool Compare(ICollection<byte> bytes1, ICollection<byte> bytes2)
         {
             if (bytes1.Count != bytes2.Count)
             {

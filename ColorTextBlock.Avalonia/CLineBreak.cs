@@ -1,10 +1,13 @@
-﻿using Avalonia;
+﻿using System.Collections.Generic;
+using System.Globalization;
 using Avalonia.Media;
 using ColorTextBlock.Avalonia.Geometries;
-using System.Collections.Generic;
 
 namespace ColorTextBlock.Avalonia
 {
+    /// <summary>
+    ///     Expression of the linebreak.
+    /// </summary>
     public class CLineBreak : CRun
     {
         public CLineBreak()
@@ -16,22 +19,15 @@ namespace ColorTextBlock.Avalonia
             double entireWidth,
             double remainWidth)
         {
-            var family = FontFamily;
-            var size = FontSize;
-            var style = FontStyle;
-            var weight = FontWeight;
-            var foreground = Foreground;
-            var background = Background;
-            var underline = IsUnderline;
-            var strikethrough = IsStrikethrough;
+            var ftxt = new FormattedText(
+                "Ty",
+                CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface(FontFamily, FontStyle, FontWeight),
+                FontSize,
+                Foreground);
 
-            FormattedText fmt = Measure(Size.Infinity, family, size, style, weight, TextWrapping.Wrap);
-            fmt.Text = "Ty";
-
-            yield return new TextGeometry(
-                0, fmt.Bounds.Height, true,
-                this,
-                "", null);
+            yield return new LineBreakMarkGeometry(this, ftxt.Height);
         }
     }
 }

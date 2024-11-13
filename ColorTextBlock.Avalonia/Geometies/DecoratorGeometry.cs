@@ -1,71 +1,90 @@
-﻿using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Media;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
 
 namespace ColorTextBlock.Avalonia.Geometries
 {
     public class DecoratorGeometry : CGeometry
     {
+        private Action<Control>? _OnClick;
+
+        private Action<Control>? _OnMouseEnter;
+        private Action<Control>? _OnMouseLeave;
+        private Action<Control>? _OnMousePressed;
+        private Action<Control>? _OnMouseReleased;
+
+        private DecoratorGeometry(
+            double w, double h, double lh,
+            CSpan owner,
+            CGeometry[] targets,
+            Border decorate) : base(
+            w, h, lh,
+            owner.TextVerticalAlignment,
+            targets[targets.Length - 1].LineBreak)
+        {
+            Owner = owner;
+            Targets = targets;
+            Decorate = decorate;
+        }
+
         public CSpan Owner { get; }
         public CGeometry[] Targets { get; }
         public Border Decorate { get; }
 
-        private Action _OnMouseEnter;
-        private Action _OnMouseLeave;
-        private Action _OnMousePressed;
-        private Action _OnMouseReleased;
-        private Action _OnClick;
-
-        public override Action OnMouseEnter
+        public override Action<Control>? OnMouseEnter
         {
-            get => () =>
+            get => ctrl =>
             {
-                _OnMouseEnter?.Invoke();
+                _OnMouseEnter?.Invoke(ctrl);
                 foreach (var target in Targets)
-                    target.OnMouseEnter?.Invoke();
+                    target.OnMouseEnter?.Invoke(ctrl);
             };
             set => _OnMouseEnter = value;
         }
-        public override Action OnMouseLeave
+
+        public override Action<Control>? OnMouseLeave
         {
-            get => () =>
+            get => ctrl =>
             {
-                _OnMouseLeave?.Invoke();
+                _OnMouseLeave?.Invoke(ctrl);
                 foreach (var target in Targets)
-                    target.OnMouseLeave?.Invoke();
+                    target.OnMouseLeave?.Invoke(ctrl);
             };
             set => _OnMouseLeave = value;
         }
-        public override Action OnMousePressed
+
+        public override Action<Control>? OnMousePressed
         {
-            get => () =>
+            get => ctrl =>
             {
-                _OnMousePressed?.Invoke();
+                _OnMousePressed?.Invoke(ctrl);
                 foreach (var target in Targets)
-                    target.OnMousePressed?.Invoke();
+                    target.OnMousePressed?.Invoke(ctrl);
             };
             set => _OnMousePressed = value;
         }
-        public override Action OnMouseReleased
+
+        public override Action<Control>? OnMouseReleased
         {
-            get => () =>
+            get => ctrl =>
             {
-                _OnMouseReleased?.Invoke();
+                _OnMouseReleased?.Invoke(ctrl);
                 foreach (var target in Targets)
-                    target.OnMouseReleased?.Invoke();
+                    target.OnMouseReleased?.Invoke(ctrl);
             };
             set => _OnMouseReleased = value;
         }
-        public override Action OnClick
+
+        public override Action<Control>? OnClick
         {
-            get => () =>
+            get => ctrl =>
             {
-                _OnClick?.Invoke();
+                _OnClick?.Invoke(ctrl);
                 foreach (var target in Targets)
-                    target.OnClick?.Invoke();
+                    target.OnClick?.Invoke(ctrl);
             };
             set => _OnClick = value;
         }
@@ -84,7 +103,10 @@ namespace ColorTextBlock.Avalonia.Geometries
             double baseHeight = 0;
             double baseHeight2 = 0;
 
-            void Max(ref double v1, double v2) => v1 = Math.Max(v1, v2);
+            void Max(ref double v1, double v2)
+            {
+                v1 = Math.Max(v1, v2);
+            }
 
             foreach (var one in oneline)
             {
@@ -117,7 +139,6 @@ namespace ColorTextBlock.Avalonia.Geometries
                     default:
                         throw new InvalidOperationException("sorry library manager forget to modify.");
                 }
-
             }
 
             Max(ref height, descentHeightTop + descentHeightBtm);
@@ -133,28 +154,13 @@ namespace ColorTextBlock.Avalonia.Geometries
                 decorate);
         }
 
-        internal DecoratorGeometry(
-            double w, double h, double lh,
-            CSpan owner,
-            CGeometry[] targets,
-            Border decorate) : base(
-                w, h, lh,
-                owner.TextVerticalAlignment,
-                targets[targets.Length - 1].LineBreak)
-        {
-            this.Owner = owner;
-            this.Targets = targets;
-            this.Decorate = decorate;
-        }
-
         public override void Render(DrawingContext ctx)
         {
-            using (ctx.PushPreTransform(Matrix.CreateTranslation(Left + Decorate.Margin.Left, Top + Decorate.Margin.Top)))
+            using (ctx.PushTransform(Matrix.CreateTranslation(Left + Decorate.Margin.Left, Top + Decorate.Margin.Top)))
             {
                 Decorate.Background = Owner.Background;
                 Decorate.Arrange(new Rect(0, 0, Width, Height));
                 Decorate.Render(ctx);
-
             }
 
             var left = Left + Decorate.BorderThickness.Left + Decorate.Padding.Left + Decorate.Margin.Left;

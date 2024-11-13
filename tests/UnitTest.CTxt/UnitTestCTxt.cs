@@ -4,6 +4,7 @@ using ApprovalTests.Reporters;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -23,7 +24,7 @@ using UnitTest.CTxt.Xamls;
 
 namespace UnitTest.CTxt
 {
-    [UseReporter(typeof(DiffReporter))]
+    //[UseReporter(typeof(DiffReporter))]
     public class UnitTestCTxt : UnitTestBase
     {
         public UnitTestCTxt()
@@ -38,7 +39,7 @@ namespace UnitTest.CTxt
             var tst1 = new Test1();
             var ctxt = (CTextBlock)tst1.Content;
 
-            var info = new MetryHolder(ctxt, 390, 1000);
+            var info = new MetryHolder(ctxt, 360, 1000);
 
             Approvals.Verify(
                 new ApprovalImageWriter(info.Image),
@@ -125,6 +126,29 @@ namespace UnitTest.CTxt
                 new DiffToolReporter(DiffEngine.DiffTool.WinMerge));
         }
 
+        [Test]
+        [RunOnUI]
+        public void GivenTest_drawableSomeMds()
+        {
+            foreach (var mdname in Util.GetTextNames().Where(nm => nm.EndsWith(".md")))
+            {
+                var text = Util.LoadText(mdname);
+                var markdown = new Markdown.Avalonia.Markdown();
+                var control = markdown.Transform(text);
+
+                var theme = new Avalonia.Themes.Simple.SimpleTheme();
+                control.Styles.Add(theme);
+
+                control.Styles.Add(MarkdownStyle.SimpleTheme);
+                control.Resources.Add("FontSizeNormal", 16d);
+
+                var umefont = new FontFamily(new Uri("avares://UnitTest.CTxt/Assets/Fonts/ume-ugo4.ttf"), "Ume UI Gothic");
+                TextElement.SetFontFamily(control, umefont);
+
+                var info = new MetryHolder(control, 500, 10000);
+            }
+        }
+
         /*
          * On Github Action, this test don't pass.
          * But on my environment, this test pass.
@@ -139,19 +163,14 @@ namespace UnitTest.CTxt
             var markdown = new Markdown.Avalonia.Markdown();
             var control = markdown.Transform(text);
 
-            control.Styles.Add(new StyleInclude(new Uri("avares://Avalonia.Themes.Default/"))
-            {
-                Source = new Uri("avares://Avalonia.Themes.Default/DefaultTheme.xaml")
-            });
-            control.Styles.Add(new StyleInclude(new Uri("avares://Avalonia.Themes.Default/"))
-            {
-                Source = new Uri("avares://Avalonia.Themes.Default/Accents/BaseLight.xaml")
-            });
-            control.Styles.Add(MarkdownStyle.DefaultTheme);
+            var theme = new Avalonia.Themes.Simple.SimpleTheme();
+            control.Styles.Add(theme);
+
+            control.Styles.Add(MarkdownStyle.SimpleTheme);
             control.Resources.Add("FontSizeNormal", 16d);
 
             var umefont = new FontFamily(new Uri("avares://UnitTest.CTxt/Assets/Fonts/ume-ugo4.ttf"), "Ume UI Gothic");
-            TextBlock.SetFontFamily(control, umefont);
+            TextElement.SetFontFamily(control, umefont);
 
             var info = new MetryHolder(control, 500, 10000);
 
@@ -205,11 +224,26 @@ namespace UnitTest.CTxt
                 Approvals.GetDefaultNamer(),
                 new DiffToolReporter(DiffEngine.DiffTool.WinMerge));
         }
+
+        [Test]
+        [RunOnUI]
+        public void GivenTest7_generatesExpectedResult()
+        {
+            var tst6 = new Test7();
+            var ctxt = (StackPanel)tst6.Content;
+
+            var info = new MetryHolder(ctxt, 480, 1000);
+
+            Approvals.Verify(
+                new ApprovalImageWriter(info.Image),
+                Approvals.GetDefaultNamer(),
+                new DiffToolReporter(DiffEngine.DiffTool.WinMerge));
+        }
     }
 
     class MetryHolder : AvaloniaObject
     {
-        private static readonly Vector Dpi = new Vector(250, 250);
+        private static readonly Vector Dpi = new(250, 250);
 
         public Bitmap Image { get; set; }
 
@@ -251,22 +285,21 @@ namespace UnitTest.CTxt
 
             var bitmap = new RenderTargetBitmap(PixelSize.FromSizeWithDpi(newReqSz, Dpi), Dpi);
 
-            using (var icontext = bitmap.CreateDrawingContext(null))
-            using (var context = new DrawingContext(icontext))
+            using (var context = bitmap.CreateDrawingContext())
             {
                 RenderHelper(ctxt, context);
             }
             Image = bitmap;
         }
 
-        private void RenderHelper(IVisual vis, DrawingContext ctx)
+        private void RenderHelper(Visual vis, DrawingContext ctx)
         {
             var sz = new Rect(vis.Bounds.Size);
             var bnd = vis.Bounds;
 
-            using (ctx.PushPostTransform(Matrix.CreateTranslation(vis.Bounds.Position)))
-            using (ctx.PushOpacity(vis.Opacity))
-            using (vis.OpacityMask != null ? ctx.PushOpacityMask(vis.OpacityMask, sz) : default(DrawingContext.PushedState))
+            using (ctx.PushTransform(Matrix.CreateTranslation(vis.Bounds.Position)))
+            //using (ctx.PushOpacity(vis.Opacity))
+            using (vis.OpacityMask != null ? ctx.PushOpacityMask(vis.OpacityMask, sz) : default)
             {
                 vis.Render(ctx);
 
@@ -274,7 +307,7 @@ namespace UnitTest.CTxt
                                             .Where(fld => fld.Name == "VisualChildren")
                                             .First();
 
-                var children = (IAvaloniaList<IVisual>)childrenProp.GetValue(vis);
+                var children = (IAvaloniaList<Visual>)childrenProp.GetValue(vis);
                 foreach (var child in children)
                     RenderHelper(child, ctx);
             }
