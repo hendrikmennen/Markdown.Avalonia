@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Svg;
+using Avalonia.Svg.Skia;
 using ShimSkiaSharp;
 
 namespace Markdown.Avalonia.Svg
