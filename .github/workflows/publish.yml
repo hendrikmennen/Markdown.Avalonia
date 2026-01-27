@@ -30,6 +30,7 @@ jobs:
 
     # Create the NuGet package in the folder from the environment variable NuGetDirectory
     - run: dotnet pack ./ColorTextBlock.Avalonia/ColorTextBlock.Avalonia.csproj --configuration Release --output ${{ env.NuGetDirectory }}
+    - run: dotnet pack ./ColorDocument.Avalonia/ColorDocument.Avalonia.csproj --configuration Release --output ${{ env.NuGetDirectory }}
     - run: dotnet pack ./Markdown.Avalonia.SyntaxHigh/Markdown.Avalonia.SyntaxHigh.csproj --configuration Release --output ${{ env.NuGetDirectory }}
     - run: dotnet pack ./Markdown.Avalonia.Tight/Markdown.Avalonia.Tight.csproj --configuration Release --output ${{ env.NuGetDirectory }}
     - run: dotnet pack ./Markdown.Avalonia.Svg/Markdown.Avalonia.Svg.csproj --configuration Release --output ${{ env.NuGetDirectory }}
