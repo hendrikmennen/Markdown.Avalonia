@@ -7,11 +7,16 @@ using Avalonia;
 using Markdown.Avalonia.SyntaxHigh.Extensions;
 using ColorDocument.Avalonia;
 using System.Text;
+using AvaloniaEdit.TextMate;
+using TextMateSharp.Themes;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
-    internal class CodeBlockElement : DocumentElement
+    public class CodeBlockElement : DocumentElement
     {
+        public static IRawTheme? CurrentEditorTheme;
+        public static IAdvancedRegistryOptions? RegistryOptions;
+        
         private SyntaxHighlightProvider _provider;
         private string _code;
         private Lazy<Border> _control;
@@ -50,19 +55,28 @@ namespace Markdown.Avalonia.SyntaxHigh
             var copyButton = new Button() { Content = new TextBlock() };
             copyButton.Classes.Add("CopyButton");
 
-            var txtEdit = new TextEditor();
-            txtEdit.Tag = lang;
-            txtEdit.SetValue(SyntaxHighlightWrapperExtension.ProviderProperty, _provider);
-            txtEdit.Text = code;
-            txtEdit.HorizontalAlignment = HorizontalAlignment.Stretch;
-            txtEdit.IsReadOnly = true;
+            var txtEdit = new TextEditor
+            {
+                Tag = lang,
+                Text = code,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                IsReadOnly = true
+            };
 
             copyButton.Click += (s, e) =>
             {
                 var clipboard = TopLevel.GetTopLevel(txtEdit)?.Clipboard;
                 clipboard?.SetTextAsync(txtEdit.Text);
             };
+            
+            if (RegistryOptions?.GetScopeByLanguageId(lang) is { } scope)
+            {
+                var textMate = txtEdit.InstallTextMate(RegistryOptions);
+                textMate.SetGrammar(scope);
+                textMate.SetTheme(CurrentEditorTheme ?? RegistryOptions.GetDefaultTheme());
 
+                txtEdit.DetachedFromVisualTree += (_, _) => { textMate.Dispose(); };
+            }
 
             var cdPd = new CodePad();
             cdPd.Content = txtEdit;
