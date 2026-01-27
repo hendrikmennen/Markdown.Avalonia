@@ -32,8 +32,8 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="OneWare.AvaloniaEdit" Version="11.3.8" />
-    <PackageReference Include="OneWare.AvaloniaEdit.TextMate" Version="11.3.8" />
+    <PackageReference Include="OneWare.AvaloniaEdit" Version="11.3.11" />
+    <PackageReference Include="OneWare.AvaloniaEdit.TextMate" Version="11.3.11" />
   </ItemGroup>
   
   <ItemGroup>

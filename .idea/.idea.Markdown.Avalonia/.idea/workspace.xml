@@ -11,9 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="83c13d5e-05eb-4cd8-acc2-488446e9a347" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/ColorTextBlock.Avalonia/ColorTextBlock.Avalonia.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/ColorTextBlock.Avalonia/ColorTextBlock.Avalonia.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Markdown.Avalonia.Svg/Markdown.Avalonia.Svg.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Markdown.Avalonia.Svg/Markdown.Avalonia.Svg.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Markdown.Avalonia.Tight/Markdown.Avalonia.Tight.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Markdown.Avalonia.Tight/Markdown.Avalonia.Tight.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Markdown.Avalonia/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Markdown.Avalonia/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,7 +22,7 @@
     <option name="firstShow" value="false" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="4" />
+    <option name="cachedIndexableFilesCount" value="5" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -68,25 +66,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Project.Markdown.AvaloniaDemo.executor": "Run",
-    ".NET Project.Markdown.AvaloniaFluentAvaloniaDemo.executor": "Run",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/hmenn/repos/Markdown.Avalonia/Markdown.Avalonia.props",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Project.Markdown.AvaloniaDemo.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Project.Markdown.AvaloniaFluentAvaloniaDemo.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/hmenn/repos/Markdown.Avalonia/Markdown.Avalonia.props&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;SolutionBuilderGeneralOptionsPage&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected=".NET Project.Markdown.AvaloniaDemo">
     <configuration name="Markdown.AvaloniaDemo" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="$PROJECT_DIR$/demos/Markdown.AvaloniaDemo/bin/Debug/net10.0/Markdown.AvaloniaDemo" />
@@ -184,7 +183,8 @@
       <workItem from="1731456848172" duration="238000" />
       <workItem from="1731457104513" duration="86000" />
       <workItem from="1731457256212" duration="983000" />
-      <workItem from="1769527971091" duration="2933000" />
+      <workItem from="1769527971091" duration="3206000" />
+      <workItem from="1769531370786" duration="678000" />
     </task>
     <task id="LOCAL-00001" summary="fix?">
       <option name="closed" value="true" />
@@ -202,7 +202,31 @@
       <option name="project" value="LOCAL" />
       <updated>1769530693792</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="fix packageids">
+      <option name="closed" value="true" />
+      <created>1769530974621</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1769530974621</updated>
+    </task>
+    <task id="LOCAL-00004" summary="process open codeblocks">
+      <option name="closed" value="true" />
+      <created>1769531163789</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1769531163789</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix">
+      <option name="closed" value="true" />
+      <created>1769531406902</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1769531406902</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,6 +238,9 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="fix?" />
     <MESSAGE value="add svg support" />
-    <option name="LAST_COMMIT_MESSAGE" value="add svg support" />
+    <MESSAGE value="fix packageids" />
+    <MESSAGE value="process open codeblocks" />
+    <MESSAGE value="fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix" />
   </component>
 </project>
