@@ -7,10 +7,8 @@
     <Version>$(PackageVersion)</Version>
     <Authors>Bevan Arps(original); whistyun; Hendrik Mennen</Authors>
     <PackageId>OneWare.Markdown.Avalonia</PackageId>
-   <TargetFramework>net10.0</TargetFramework>
     <Version>$(PackageVersion)</Version>
     <Authors>Bevan Arps(original); whistyun</Authors>
-    <PackageId>Markdown.Avalonia</PackageId>
     <AssemblyName>Markdown.Avalonia.Full</AssemblyName>
     <RootNamespace>Markdown.Avalonia.Full</RootNamespace>
     <Company />

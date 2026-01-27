@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
    <TargetFramework>net10.0</TargetFramework>
-    <PackageId>Markdown.Avalonia.Html</PackageId>
+    <PackageId>OneWare.Markdown.Avalonia.Html</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>whistyun</Authors>
     <Description>html tag processor for Markdown.Avalonia</Description>     

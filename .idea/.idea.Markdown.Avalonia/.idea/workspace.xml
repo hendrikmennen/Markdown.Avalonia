@@ -11,9 +11,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="83c13d5e-05eb-4cd8-acc2-488446e9a347" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/publish.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/publish.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Markdown.Avalonia/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Markdown.Avalonia/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demos/Markdown.AvaloniaDemo/Markdown.AvaloniaDemo.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/demos/Markdown.AvaloniaDemo/Markdown.AvaloniaDemo.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ColorTextBlock.Avalonia/ColorTextBlock.Avalonia.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/ColorTextBlock.Avalonia/ColorTextBlock.Avalonia.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Markdown.Avalonia.Svg/Markdown.Avalonia.Svg.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Markdown.Avalonia.Svg/Markdown.Avalonia.Svg.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Markdown.Avalonia.Tight/Markdown.Avalonia.Tight.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Markdown.Avalonia.Tight/Markdown.Avalonia.Tight.csproj" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +48,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bdbec2d9559e6c1b5824704d5f3d7bfd5b20a25275ede5cba6bbd7fa2b2a/Dispatcher.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/f6c49f7a473a4d23a691c533edcf9704206c00/_8c2c4/IBinding.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="jar://$APPLICATION_PLUGINS_DIR$/restClient/lib/restClient.jar!/com/intellij/ws/rest/client/stubs/http-client.dynamic-variables.d.ts" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -69,7 +70,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    ".NET Project.Markdown.AvaloniaDemo.executor": "Debug",
+    ".NET Project.Markdown.AvaloniaDemo.executor": "Run",
     ".NET Project.Markdown.AvaloniaFluentAvaloniaDemo.executor": "Run",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -183,7 +184,7 @@
       <workItem from="1731456848172" duration="238000" />
       <workItem from="1731457104513" duration="86000" />
       <workItem from="1731457256212" duration="983000" />
-      <workItem from="1769527971091" duration="2602000" />
+      <workItem from="1769527971091" duration="2933000" />
     </task>
     <task id="LOCAL-00001" summary="fix?">
       <option name="closed" value="true" />
@@ -193,7 +194,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769530289682</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="add svg support">
+      <option name="closed" value="true" />
+      <created>1769530693792</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1769530693792</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -204,25 +213,7 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="fix?" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix?" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Markdown.Avalonia.Svg/SvgImageResolver.cs</url>
-          <line>18</line>
-          <properties documentPath="$PROJECT_DIR$/Markdown.Avalonia.Svg/SvgImageResolver.cs" containingFunctionPresentation="Lambda expression inside Method 'Load'">
-            <startOffsets>
-              <option value="421" />
-            </startOffsets>
-            <endOffsets>
-              <option value="443" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="add svg support" />
+    <option name="LAST_COMMIT_MESSAGE" value="add svg support" />
   </component>
 </project>

@@ -6,7 +6,7 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
    <TargetFramework>net10.0</TargetFramework>
-    <PackageId>Markdown.Avalonia.Svg</PackageId>
+    <PackageId>OneWare.Markdown.Avalonia.Svg</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>grifsun; whistyun</Authors>
     <Copyright>Copyright (c) 2023 grifsun, whistyun</Copyright>

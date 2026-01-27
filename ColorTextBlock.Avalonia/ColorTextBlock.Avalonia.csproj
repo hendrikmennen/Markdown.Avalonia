@@ -21,17 +21,4 @@
     
     <Import Project="..\Markdown.Avalonia.props"/>
 
-    <PropertyGroup>
-        <OutputType>Library</OutputType>
-        <TargetFramework>net10.0</TargetFramework>
-        <PackageId>ColorTextBlock.Avalonia</PackageId>
-        <Version>$(PackageVersion)</Version>
-        <Authors>whistyun</Authors>
-        <Copyright>Copyright (c) 2020 whistyun</Copyright>
-        <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia/tree/master/ColorTextBlock.Avalonia/</PackageProjectUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <LangVersion>9</LangVersion>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
 </Project>
