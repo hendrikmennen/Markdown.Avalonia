@@ -14,20 +14,15 @@ namespace Markdown.Avalonia.Svg
     {
         public async Task<IImage?> Load(Stream stream)
         {
-            var task = Task.Run(() =>
+            if (IsSvgFile(stream))
             {
-                if (IsSvgFile(stream))
+                var svg = SvgSource.LoadFromStream(stream);
+                return new SvgImage
                 {
-                    var svg = SvgSource.LoadFromStream(stream);
-                    return new SvgImage
-                    {
-                        Source = svg
-                    };
-                }
-
-                return null;
-            });
-            return await task;
+                    Source = svg
+                };
+            }
+            return null;
         }
 
         private static bool IsSvgFile(Stream fileStream)

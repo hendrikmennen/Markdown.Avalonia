@@ -32,6 +32,8 @@ jobs:
     - run: dotnet pack ./ColorTextBlock.Avalonia/ColorTextBlock.Avalonia.csproj --configuration Release --output ${{ env.NuGetDirectory }}
     - run: dotnet pack ./Markdown.Avalonia.SyntaxHigh/Markdown.Avalonia.SyntaxHigh.csproj --configuration Release --output ${{ env.NuGetDirectory }}
     - run: dotnet pack ./Markdown.Avalonia.Tight/Markdown.Avalonia.Tight.csproj --configuration Release --output ${{ env.NuGetDirectory }}
+    - run: dotnet pack ./Markdown.Avalonia.Svg/Markdown.Avalonia.Svg.csproj --configuration Release --output ${{ env.NuGetDirectory }}
+    - run: dotnet pack ./Markdown.Avalonia.Html/Markdown.Avalonia.Html.csproj --configuration Release --output ${{ env.NuGetDirectory }}
 
     # Publish the NuGet package as an artifact, so they can be used in the following jobs
     - uses: actions/upload-artifact@v4
