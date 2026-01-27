@@ -1,39 +1,35 @@
-﻿using System;
+﻿using Avalonia.Metadata;
+using Markdown.Avalonia.Plugins;
+using Markdown.Avalonia.Utils;
+using Microsoft.VisualBasic;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Input;
-using Avalonia.Metadata;
-using Markdown.Avalonia.Plugins;
-using Markdown.Avalonia.Utils;
 
 namespace Markdown.Avalonia
 {
     public class MdAvPlugins
     {
         private SetupInfo? _cache;
+        private IPathResolver? _pathResolver;
         private IContainerBlockHandler? _containerBlockHandler;
         private ICommand? _hyperlinkCommand;
-        private IPathResolver? _pathResolver;
 
-        public MdAvPlugins()
-        {
-            Plugins = new ObservableCollection<IMdAvPlugin>();
-            Plugins.CollectionChanged += (s, e) => _cache = null;
-        }
-
-        [Content] public ObservableCollection<IMdAvPlugin> Plugins { get; }
+        [Content]
+        public ObservableCollection<IMdAvPlugin> Plugins { get; }
 
         public IPathResolver? PathResolver
         {
-            get => _pathResolver;
-            set
+            get => _pathResolver; set
             {
                 _cache = null;
                 _pathResolver = value;
             }
         }
-
         public IContainerBlockHandler? ContainerBlockHandler
         {
             get => _containerBlockHandler;
@@ -43,7 +39,6 @@ namespace Markdown.Avalonia
                 _containerBlockHandler = value;
             }
         }
-
         public ICommand? HyperlinkCommand
         {
             get => _hyperlinkCommand;
@@ -56,20 +51,28 @@ namespace Markdown.Avalonia
 
         public SetupInfo Info => _cache ??= CreateInfo();
 
+        public MdAvPlugins()
+        {
+            Plugins = new ObservableCollection<IMdAvPlugin>();
+            Plugins.CollectionChanged += (s, e) => _cache = null;
+        }
+
         protected virtual SetupInfo CreateInfo()
         {
             var setupInf = new SetupInfo();
-            var hasBuiltin = false;
+            bool hasBuiltin = false;
 
             (
-                var orderedPlugin,
-                var dic
+                IEnumerable<IMdAvPlugin> orderedPlugin,
+                Dictionary<Type, IMdAvPlugin> dic
             ) = ComputeOrderedPlugins();
 
             foreach (var plugin in orderedPlugin)
             {
                 if (plugin is IMdAvPluginRequestAnother another)
+                {
                     another.Inject(another.DependsOn.Select(dep => dic[dep]));
+                }
 
                 plugin.Setup(setupInf);
 
@@ -94,6 +97,7 @@ namespace Markdown.Avalonia
         }
 
 
+
         protected (IEnumerable<IMdAvPlugin>, Dictionary<Type, IMdAvPlugin>) ComputeOrderedPlugins()
         {
             var plugins = new List<IMdAvPlugin>(Plugins.Count);
@@ -101,7 +105,10 @@ namespace Markdown.Avalonia
 
             foreach (var plugin in Plugins)
             {
-                if (plugin is IMdAvPluginRequestAnother anoth) ComputeDepneds(anoth, plugins, dic);
+                if (plugin is IMdAvPluginRequestAnother anoth)
+                {
+                    ComputeDepneds(anoth, plugins, dic);
+                }
                 plugins.Add(plugin);
             }
 
@@ -110,8 +117,7 @@ namespace Markdown.Avalonia
             return (plugins, dic);
 
 
-            void ComputeDepneds(IMdAvPluginRequestAnother anoth, List<IMdAvPlugin> plugins,
-                Dictionary<Type, IMdAvPlugin> dic)
+            void ComputeDepneds(IMdAvPluginRequestAnother anoth, List<IMdAvPlugin> plugins, Dictionary<Type, IMdAvPlugin> dic)
             {
                 foreach (var dep in anoth.DependsOn)
                 {
@@ -130,12 +136,13 @@ namespace Markdown.Avalonia
                     dic[dep] = depPlugin;
                 }
             }
+
         }
 
 
-        private class PluginComparer : IComparer<IMdAvPlugin>
+        class PluginComparer : IComparer<IMdAvPlugin>
         {
-            private readonly Dictionary<Type, IMdAvPlugin> _plugins;
+            private Dictionary<Type, IMdAvPlugin> _plugins;
 
             public PluginComparer(Dictionary<Type, IMdAvPlugin> plugins)
             {
@@ -145,12 +152,14 @@ namespace Markdown.Avalonia
             public int Compare(IMdAvPlugin? x, IMdAvPlugin? y)
             {
                 if (x is IMdAvPluginRequestAnother xanoth && y is IMdAvPluginRequestAnother yanoth)
+                {
                     return
                         // dose x request y?
                         ComputeRequest(xanoth, yanoth) ? -1 :
                         // dose y request x?
                         ComputeRequest(yanoth, xanoth) ? 1 :
                         0;
+                }
 
                 if (x is not IMdAvPluginRequestAnother && y is not IMdAvPluginRequestAnother)
                     return 0;
@@ -179,6 +188,7 @@ namespace Markdown.Avalonia
 
                 return false;
             }
+
         }
     }
 }

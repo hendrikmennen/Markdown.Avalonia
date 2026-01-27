@@ -1,8 +1,12 @@
-﻿namespace Markdown.Avalonia.Parsers
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Markdown.Avalonia.Parsers
 {
     public struct ParseStatus
     {
-        public static readonly ParseStatus Init = new(true);
+        public static readonly ParseStatus Init = new ParseStatus(true);
 
         public bool SupportTextAlignment { get; }
 

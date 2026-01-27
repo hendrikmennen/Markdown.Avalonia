@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>$(TestTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <LangVersion>9</LangVersion>
     <Nullable>disable</Nullable>
@@ -18,6 +19,9 @@
     <Compile Update="Xamls\Test5.axaml.cs">
       <DependentUpon>Test5.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Xamls\Test7 - コピー.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
     <Compile Update="Xamls\Test7.axaml.cs">
       <DependentUpon>Test7.axaml</DependentUpon>
     </Compile>
@@ -25,6 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.3" />
+    <PackageReference Include="Avalonia" Version="$(TestAvaloniaVersion)" />
     <PackageReference Include="Avalonia.Desktop" Version="$(TestAvaloniaVersion)" />
   </ItemGroup>
 

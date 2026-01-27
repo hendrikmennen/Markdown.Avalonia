@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Media;
+﻿using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using ColorTextBlock.Avalonia.Geometries;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Media;
 
 namespace ColorTextBlock.Avalonia
 {
     /// <summary>
-    ///     Displays an image
+    /// Displays an image
     /// </summary>
     public class CImage : CInline
     {
@@ -26,56 +26,40 @@ namespace ColorTextBlock.Avalonia
             AvaloniaProperty.Register<CImage, double?>(nameof(RelativeWidth));
 
         /// <summary>
-        ///     Determine wheither image auto fitting or protrude outside Control
-        ///     when image is too width to be rendered in control.
-        ///     If you set 'true', Image is fitted to control width.
+        /// Determine wheither image auto fitting or protrude outside Control
+        /// when image is too width to be rendered in control.
+        /// If you set 'true', Image is fitted to control width.
         /// </summary>
         public static readonly StyledProperty<bool> FittingWhenProtrudeProperty =
-            AvaloniaProperty.Register<CImage, bool>(nameof(FittingWhenProtrude), true);
+            AvaloniaProperty.Register<CImage, bool>(nameof(FittingWhenProtrude), defaultValue: true);
 
         /// <summary>
-        ///     Save aspect ratio if one of <see cref="LayoutHeightProperty" /> or <see cref="LayoutWidthProperty" /> set.
+        /// Save aspect ratio if one of <see cref="LayoutHeightProperty"/> or <see cref="LayoutWidthProperty"/> set.
         /// </summary>
         public static readonly StyledProperty<bool> SaveAspectRatioProperty =
             AvaloniaProperty.Register<CImage, bool>(nameof(SaveAspectRatio));
 
-        public CImage(Task<IImage?> task, IImage whenError)
-        {
-            if (task is null) throw new NullReferenceException(nameof(task));
-            if (whenError is null) throw new NullReferenceException(nameof(whenError));
-
-            Task = task;
-            WhenError = whenError;
-        }
-
-        public CImage(IImage image)
-        {
-            if (image is null) throw new NullReferenceException(nameof(image));
-            WhenError = Image = image;
-        }
-
         public double? LayoutWidth
         {
-            get => GetValue(LayoutWidthProperty);
-            set => SetValue(LayoutWidthProperty, value);
+            get { return GetValue(LayoutWidthProperty); }
+            set { SetValue(LayoutWidthProperty, value); }
         }
-
         public double? LayoutHeight
         {
-            get => GetValue(LayoutHeightProperty);
-            set => SetValue(LayoutHeightProperty, value);
+            get { return GetValue(LayoutHeightProperty); }
+            set { SetValue(LayoutHeightProperty, value); }
         }
 
         public double? RelativeWidth
         {
-            get => GetValue(RelativeWidthProperty);
-            set => SetValue(RelativeWidthProperty, value);
+            get { return GetValue(RelativeWidthProperty); }
+            set { SetValue(RelativeWidthProperty, value); }
         }
 
         public bool FittingWhenProtrude
         {
-            get => GetValue(FittingWhenProtrudeProperty);
-            set => SetValue(FittingWhenProtrudeProperty, value);
+            get { return GetValue(FittingWhenProtrudeProperty); }
+            set { SetValue(FittingWhenProtrudeProperty, value); }
         }
 
         public bool SaveAspectRatio
@@ -88,6 +72,21 @@ namespace ColorTextBlock.Avalonia
         private IImage WhenError { get; }
         public IImage? Image { private set; get; }
 
+        public CImage(Task<IImage?> task, IImage whenError)
+        {
+            if (task is null) throw new NullReferenceException(nameof(task));
+            if (whenError is null) throw new NullReferenceException(nameof(whenError));
+
+            this.Task = task;
+            this.WhenError = whenError;
+        }
+
+        public CImage(IImage image)
+        {
+            if (image is null) throw new NullReferenceException(nameof(image));
+            this.WhenError = this.Image = image;
+        }
+
         protected override IEnumerable<CGeometry> MeasureOverride(
             double entireWidth, double remainWidth)
         {
@@ -98,7 +97,7 @@ namespace ColorTextBlock.Avalonia
                     Image = WhenError;
                 }
                 else if (
-                    Task.Status == TaskStatus.RanToCompletion
+                       Task.Status == TaskStatus.RanToCompletion
                     || Task.Status == TaskStatus.Faulted
                     || Task.Status == TaskStatus.Canceled)
                 {
@@ -107,10 +106,10 @@ namespace ColorTextBlock.Avalonia
                 else
                 {
                     Image = new WriteableBitmap(
-                        new PixelSize(1, 1),
-                        new Vector(96, 96),
-                        PixelFormat.Rgb565,
-                        AlphaFormat.Premul);
+                                    new PixelSize(1, 1),
+                                    new Vector(96, 96),
+                                    PixelFormat.Rgb565,
+                                    AlphaFormat.Premul);
 
                     Thread.MemoryBarrier();
 
@@ -122,12 +121,13 @@ namespace ColorTextBlock.Avalonia
                             Image = Task.IsFaulted ? WhenError : Task.Result ?? WhenError;
                             RequestMeasure();
                         });
+
                     });
                 }
             }
 
-            var imageWidth = Image.Size.Width;
-            var imageHeight = Image.Size.Height;
+            double imageWidth = Image.Size.Width;
+            double imageHeight = Image.Size.Height;
 
             if (RelativeWidth.HasValue)
             {
@@ -158,7 +158,10 @@ namespace ColorTextBlock.Avalonia
 
             if (imageWidth > remainWidth)
             {
-                if (entireWidth != remainWidth) yield return new LineBreakMarkGeometry(this);
+                if (entireWidth != remainWidth)
+                {
+                    yield return new LineBreakMarkGeometry(this);
+                }
 
                 if (FittingWhenProtrude && imageWidth > entireWidth)
                 {
@@ -168,13 +171,9 @@ namespace ColorTextBlock.Avalonia
                 }
             }
 
-            yield return new ImageGeometry(Image, imageWidth, imageHeight,
-                TextVerticalAlignment);
+            yield return new ImageGeometry(this, Image, imageWidth, imageHeight, TextVerticalAlignment);
         }
 
-        public override string AsString()
-        {
-            return " $$Image$$ ";
-        }
+        public override string AsString() => " $$Image$$ ";
     }
 }

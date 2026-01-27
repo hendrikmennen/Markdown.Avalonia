@@ -6,6 +6,7 @@
     <OutputType>WinExe</OutputType>
     <IsPackable>false</IsPackable>
   <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>$(DemoAppTargetFrameworks)</TargetFrameworks>
     <LangVersion>9</LangVersion>
     <Nullable>disable</Nullable>
   </PropertyGroup>
@@ -18,6 +19,7 @@
     <PackageReference Include="Avalonia.Themes.Simple" Version="$(DemoAvaloniaVersion)" />
     <PackageReference Include="Avalonia.Desktop" Version="$(DemoAvaloniaVersion)" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.0.0-preview6" />
+    <PackageReference Include="FluentAvaloniaUI" Version="2.0.5" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="$(DemoAvaloniaVersion)" />
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="$(DemoAvaloniaVersion)" />
     <None Remove="Assets\XamlTemplate.txt" />

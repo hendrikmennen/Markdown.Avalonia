@@ -1,27 +1,26 @@
 ﻿using System.Collections.Generic;
-using Avalonia;
 using Avalonia.Media;
+using Avalonia;
 using ColorTextBlock.Avalonia.Fonts;
 
 namespace ColorTextBlock.Avalonia
 {
     /// <summary>
-    ///     Monospace decoration
+    /// Monospace decoration
     /// </summary>
     public class CCode : CSpan
     {
         /// <summary>
-        ///     Monospace font family used for code display.
+        /// Monospace font family used for code display.
         /// </summary>
-        /// <see cref="MonospaceFontFamily" />
+        /// <see cref="MonospaceFontFamily"/>
         public static readonly StyledProperty<FontFamily> MonospaceFontFamilyProperty =
             AvaloniaProperty.Register<CCode, FontFamily>(
                 nameof(MonospaceFontFamily),
-                FontFamilyCollector.TryGetMonospace() ?? FontFamily.Default,
-                true);
+                defaultValue: FontFamilyCollector.TryGetMonospace() ?? FontFamily.Default,
+                inherits: true);
 
-        public CCode()
-        {
+        public CCode() {
             var obsvr = this.GetBindingObservable(MonospaceFontFamilyProperty);
             Bind(FontFamilyProperty, obsvr);
         }
@@ -33,12 +32,12 @@ namespace ColorTextBlock.Avalonia
         }
 
         /// <summary>
-        ///     Monospace font family used for code display.
+        /// Monospace font family used for code display.
         /// </summary>
         public FontFamily MonospaceFontFamily
         {
-            get => GetValue(MonospaceFontFamilyProperty);
-            set => SetValue(MonospaceFontFamilyProperty, value);
+            get { return GetValue(MonospaceFontFamilyProperty); }
+            set { SetValue(MonospaceFontFamilyProperty, value); }
         }
     }
 }

@@ -1,11 +1,21 @@
-﻿using System.Text;
-using Avalonia.Layout;
+﻿using System;
+using System.Text;
 using Avalonia.Media;
+using Avalonia.Layout;
 
 namespace Markdown.Avalonia.Tables
 {
-    internal class TextileTableCell : ITableCell
+    class TextileTableCell : ITableCell
     {
+        public int ColumnIndex { set; get; }
+
+        public string? RawText { get; }
+        public string? Text { get; }
+        public int RowSpan { set; get; }
+        public int ColSpan { set; get; }
+        public TextAlignment? Horizontal { set; get; }
+        public VerticalAlignment? Vertical { set; get; }
+
         public TextileTableCell(string? txt)
         {
             RawText = txt;
@@ -33,90 +43,77 @@ namespace Markdown.Avalonia.Tables
                             sb.Append('\\').Append(txt[i]);
                     }
                     else
-                    {
                         sb.Append('\\');
-                    }
                 }
                 else
-                {
                     sb.Append(c);
-                }
             }
-
             Text = sb.ToString();
         }
 
-        public int ColumnIndex { set; get; }
-
-        public string? RawText { get; }
-        public string? Text { get; }
-        public int RowSpan { set; get; }
-        public int ColSpan { set; get; }
-        public TextAlignment? Horizontal { set; get; }
-        public VerticalAlignment? Vertical { set; get; }
-
         private string ParseFormatFrom(string txt)
         {
-            var idx = txt.IndexOf('.');
+            int idx = txt.IndexOf('.');
 
             if (idx == -1)
             {
                 return txt.Trim();
             }
-
-            var styleTxt = txt.Substring(0, idx);
-
-            for (var i = 0; i < styleTxt.Length; ++i)
+            else
             {
-                var c = styleTxt[i];
+                var styleTxt = txt.Substring(0, idx);
 
-                switch (c)
+                for (var i = 0; i < styleTxt.Length; ++i)
                 {
-                    case '/': // /2 rowspan
-                        ++i;
-                        var numTxt = ContinueToNum(styleTxt, ref i);
-                        if (numTxt.Length == 0) goto default;
-                        RowSpan = int.Parse(numTxt);
+                    var c = styleTxt[i];
 
-                        break;
+                    switch (c)
+                    {
+                        case '/': // /2 rowspan
+                            ++i;
+                            var numTxt = ContinueToNum(styleTxt, ref i);
+                            if (numTxt.Length == 0) goto default;
+                            RowSpan = Int32.Parse(numTxt);
 
-                    case '\\': // \2 colspan
-                        ++i;
-                        numTxt = ContinueToNum(styleTxt, ref i);
-                        if (numTxt.Length == 0) goto default;
-                        ColSpan = int.Parse(numTxt);
-                        break;
+                            break;
 
-                    case '<': // < left align
-                        Horizontal = TextAlignment.Left;
-                        break;
+                        case '\\': // \2 colspan
+                            ++i;
+                            numTxt = ContinueToNum(styleTxt, ref i);
+                            if (numTxt.Length == 0) goto default;
+                            ColSpan = Int32.Parse(numTxt);
+                            break;
 
-                    case '>': // > right align
-                        Horizontal = TextAlignment.Right;
-                        break;
+                        case '<': // < left align
+                            Horizontal = TextAlignment.Left;
+                            break;
 
-                    case '=': // = center align 
-                        Horizontal = TextAlignment.Center;
-                        break;
+                        case '>': // > right align
+                            Horizontal = TextAlignment.Right;
+                            break;
 
-                    case '^': // ^ top align
-                        Vertical = VerticalAlignment.Top;
-                        break;
+                        case '=': // = center align 
+                            Horizontal = TextAlignment.Center;
+                            break;
 
-                    case '~': // ~ bottom align
-                        Vertical = VerticalAlignment.Bottom;
-                        break;
+                        case '^': // ^ top align
+                            Vertical = VerticalAlignment.Top;
+                            break;
 
-                    default:
-                        RowSpan = 1;
-                        ColSpan = 1;
-                        Horizontal = null;
-                        Vertical = null;
-                        return txt.Trim();
+                        case '~': // ~ bottom align
+                            Vertical = VerticalAlignment.Bottom;
+                            break;
+
+                        default:
+                            RowSpan = 1;
+                            ColSpan = 1;
+                            Horizontal = null;
+                            Vertical = null;
+                            return txt.Trim();
+                    }
                 }
+                return txt.Substring(idx + 1).Trim();
             }
-
-            return txt.Substring(idx + 1).Trim();
         }
 
 
@@ -133,7 +130,6 @@ namespace Markdown.Avalonia.Tables
 
                 else break;
             }
-
             --idx;
             return builder.ToString();
         }

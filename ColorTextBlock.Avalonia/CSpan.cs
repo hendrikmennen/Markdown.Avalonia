@@ -1,70 +1,69 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Layout;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Metadata;
 using ColorTextBlock.Avalonia.Geometries;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ColorTextBlock.Avalonia
 {
     /// <summary>
-    ///     Text decoration
+    /// Text decoration
     /// </summary>
     public class CSpan : CInline
     {
         /// <summary>
-        ///     The thickness of the border
+        /// The thickness of the border
         /// </summary>
-        /// <seealso cref="BorderThickness" />
+        /// <seealso cref="BorderThickness"/>
         public static readonly StyledProperty<Thickness> BorderThicknessProperty =
             AvaloniaProperty.Register<CSpan, Thickness>(nameof(BorderThickness));
 
         /// <summary>
-        ///     The brush of the border.
+        /// The brush of the border.
         /// </summary>
-        /// <seealso cref="BorderBrush" />
+        /// <seealso cref="BorderBrush"/>
         public static readonly StyledProperty<IBrush> BorderBrushProperty =
             AvaloniaProperty.Register<CSpan, IBrush>(nameof(BorderBrush));
 
         /// <summary>
-        ///     The radius of the border rounded corners
+        /// The radius of the border rounded corners
         /// </summary>
-        /// <seealso cref="CornerRadius" />
+        /// <seealso cref="CornerRadius"/>
         public static readonly StyledProperty<CornerRadius> CornerRadiusProperty =
             AvaloniaProperty.Register<CSpan, CornerRadius>(nameof(CornerRadius));
 
         /// <summary>
-        ///     The box shadow effect parameters
+        /// The box shadow effect parameters
         /// </summary>
-        /// <seealso cref="BoxShadow" />
+        /// <seealso cref="BoxShadow"/>
         public static readonly StyledProperty<BoxShadows> BoxShadowProperty =
             AvaloniaProperty.Register<CSpan, BoxShadows>(nameof(BoxShadow));
 
         /// <summary>
-        ///     The padding to place around the Child control.
+        /// The padding to place around the Child control.
         /// </summary>
-        /// <seealso cref="Padding" />
+        /// <seealso cref="Padding"/>
         public static readonly StyledProperty<Thickness> PaddingProperty =
             AvaloniaProperty.Register<CSpan, Thickness>(nameof(Padding));
 
         /// <summary>
-        ///     The margin around the element.
+        /// The margin around the element.
         /// </summary>
-        /// <seealso cref="Margin" />
+        /// <seealso cref="Margin"/>
         public static readonly StyledProperty<Thickness> MarginProperty =
-            Layoutable.MarginProperty.AddOwner<CSpan>();
+            InputElement.MarginProperty.AddOwner<CSpan>();
 
         /// <summary>
-        ///     THe content of the eleemnt
+        /// THe content of the eleemnt
         /// </summary>
-        /// <seealso cref="Content" />
+        /// <seealso cref="Content"/>
         public static readonly StyledProperty<IEnumerable<CInline>> ContentProperty =
             AvaloniaProperty.Register<CSpan, IEnumerable<CInline>>(nameof(Content));
-
-        private Border? _border;
 
         static CSpan()
         {
@@ -72,12 +71,82 @@ namespace ColorTextBlock.Avalonia
                 (x, e) =>
                 {
                     if (e.OldValue is IEnumerable<CInline> oldlines)
+                    {
                         foreach (var child in oldlines)
                             x.LogicalChildren.Remove(child);
+                    }
                     if (e.NewValue is IEnumerable<CInline> newlines)
+                    {
                         foreach (var child in newlines)
                             x.LogicalChildren.Add(child);
+                    }
                 });
+        }
+
+        private Border? _border;
+
+        /// <summary>
+        /// The thickness of the border
+        /// </summary>
+        public Thickness BorderThickness
+        {
+            get => GetValue(BorderThicknessProperty);
+            set => SetValue(BorderThicknessProperty, value);
+        }
+
+        /// <summary>
+        /// The brush of the border.
+        /// </summary>
+        public IBrush BorderBrush
+        {
+            get => GetValue(BorderBrushProperty);
+            set => SetValue(BorderBrushProperty, value);
+        }
+
+        /// <summary>
+        /// The radius of the border rounded corners
+        /// </summary>
+        public CornerRadius CornerRadius
+        {
+            get => GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
+        }
+
+        /// <summary>
+        /// The box shadow effect parameters
+        /// </summary>
+        public BoxShadows BoxShadow
+        {
+            get => GetValue(BoxShadowProperty);
+            set => SetValue(BoxShadowProperty, value);
+        }
+
+        /// <summary>
+        /// The padding to place around the Child control.
+        /// </summary>
+        public Thickness Padding
+        {
+            get => GetValue(PaddingProperty);
+            set => SetValue(PaddingProperty, value);
+        }
+
+        /// <summary>
+        /// The margin around the element.
+        /// </summary>
+        public Thickness Margin
+        {
+            get => GetValue(MarginProperty);
+            set => SetValue(MarginProperty, value);
+        }
+
+        /// <summary>
+        /// THe content of the eleemnt
+        /// </summary>
+        [Content]
+        public IEnumerable<CInline> Content
+        {
+            get { return GetValue(ContentProperty); }
+            set { SetValue(ContentProperty, value); }
         }
 
         public CSpan()
@@ -103,70 +172,6 @@ namespace ColorTextBlock.Avalonia
             Content = inlines.ToArray();
         }
 
-        /// <summary>
-        ///     The thickness of the border
-        /// </summary>
-        public Thickness BorderThickness
-        {
-            get => GetValue(BorderThicknessProperty);
-            set => SetValue(BorderThicknessProperty, value);
-        }
-
-        /// <summary>
-        ///     The brush of the border.
-        /// </summary>
-        public IBrush BorderBrush
-        {
-            get => GetValue(BorderBrushProperty);
-            set => SetValue(BorderBrushProperty, value);
-        }
-
-        /// <summary>
-        ///     The radius of the border rounded corners
-        /// </summary>
-        public CornerRadius CornerRadius
-        {
-            get => GetValue(CornerRadiusProperty);
-            set => SetValue(CornerRadiusProperty, value);
-        }
-
-        /// <summary>
-        ///     The box shadow effect parameters
-        /// </summary>
-        public BoxShadows BoxShadow
-        {
-            get => GetValue(BoxShadowProperty);
-            set => SetValue(BoxShadowProperty, value);
-        }
-
-        /// <summary>
-        ///     The padding to place around the Child control.
-        /// </summary>
-        public Thickness Padding
-        {
-            get => GetValue(PaddingProperty);
-            set => SetValue(PaddingProperty, value);
-        }
-
-        /// <summary>
-        ///     The margin around the element.
-        /// </summary>
-        public Thickness Margin
-        {
-            get => GetValue(MarginProperty);
-            set => SetValue(MarginProperty, value);
-        }
-
-        /// <summary>
-        ///     THe content of the eleemnt
-        /// </summary>
-        [Content]
-        public IEnumerable<CInline> Content
-        {
-            get => GetValue(ContentProperty);
-            set => SetValue(ContentProperty, value);
-        }
-
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
             base.OnPropertyChanged(change);
@@ -189,7 +194,7 @@ namespace ColorTextBlock.Avalonia
 
         private void OnBorderPropertyChanged(bool requestMeasure)
         {
-            var borderEnabled =
+            bool borderEnabled =
                 BorderThickness != default ||
                 Padding != default ||
                 CornerRadius != default ||
@@ -232,54 +237,61 @@ namespace ColorTextBlock.Avalonia
 
                 entireWidth -= _border.DesiredSize.Width;
                 remainWidth -= _border.DesiredSize.Width;
-            }
 
-            var metries = new List<CGeometry>();
-            foreach (var inline in Content)
+                return PrivateMeasure(_border, entireWidth, remainWidth);
+            }
+            else
             {
-                var addings = inline.Measure(entireWidth, remainWidth);
+                return PrivateMeasure(entireWidth, remainWidth);
+            }
+        }
+
+        private IEnumerable<CGeometry> PrivateMeasure(
+            Border border,
+            double entireWidth,
+            double remainWidth)
+        {
+            var buffer = new List<CGeometry>();
+            foreach (var adding in PrivateMeasure(entireWidth, remainWidth))
+            {
+                // save linebreak before span
+                if (adding is LineBreakMarkGeometry && buffer.Count == 0)
+                {
+                    yield return adding;
+                    continue;
+                }
+
+                buffer.Add(adding);
+
+                if (adding.LineBreak)
+                {
+                    yield return DecoratorGeometry.New(this, buffer, border);
+                    buffer.Clear();
+                }
+            }
+            if (buffer.Count != 0)
+            {
+                yield return DecoratorGeometry.New(this, buffer, border);
+            }
+        }
+
+        private IEnumerable<CGeometry> PrivateMeasure(
+            double entireWidth,
+            double remainWidth)
+        {
+            foreach (CInline inline in Content)
+            {
+                IEnumerable<CGeometry> addings = inline.Measure(entireWidth, remainWidth);
                 foreach (var add in addings)
                 {
-                    metries.Add(add);
+                    yield return add;
+
                     if (add.LineBreak) remainWidth = entireWidth;
                     else remainWidth -= add.Width;
                 }
             }
-
-            if (_border is not null)
-            {
-                var renew = new List<CGeometry>();
-
-                var buffer = new List<CGeometry>();
-                foreach (var adding in metries)
-                {
-                    // save linebreak before span
-                    if (adding is LineBreakMarkGeometry && buffer.Count == 0)
-                    {
-                        renew.Add(adding);
-                        continue;
-                    }
-
-                    buffer.Add(adding);
-
-                    if (adding.LineBreak)
-                    {
-                        renew.Add(DecoratorGeometry.New(this, buffer, _border));
-                        buffer.Clear();
-                    }
-                }
-
-                if (buffer.Count != 0) renew.Add(DecoratorGeometry.New(this, buffer, _border));
-
-                metries = renew;
-            }
-
-            return metries;
         }
 
-        public override string AsString()
-        {
-            return string.Join("", Content.Select(c => c.AsString()));
-        }
+        public override string AsString() => String.Join("", Content.Select(c => c.AsString()));
     }
 }

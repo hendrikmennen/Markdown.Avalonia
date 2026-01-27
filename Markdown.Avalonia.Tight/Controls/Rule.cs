@@ -1,7 +1,11 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Text;
 using HAlign = Avalonia.Layout.HorizontalAlignment;
 using VAlign = Avalonia.Layout.VerticalAlignment;
 
@@ -9,18 +13,18 @@ namespace Markdown.Avalonia.Controls
 {
     public class Rule : UserControl
     {
-        private const double _SingleLineWidth = 1;
-        private const double _BoldLineWidth = 2;
-        private const double _LineMargin = 1;
+        const double _SingleLineWidth = 1;
+        const double _BoldLineWidth = 2;
+        const double _LineMargin = 1;
 
         public static readonly StyledProperty<double> SingleLineWidthProperty =
-            AvaloniaProperty.Register<Rule, double>(nameof(SingleLineWidth), _SingleLineWidth);
+            AvaloniaProperty.Register<Rule, double>(nameof(SingleLineWidth), defaultValue: _SingleLineWidth);
 
         public static readonly StyledProperty<double> BoldLineWidthProperty =
-            AvaloniaProperty.Register<Rule, double>(nameof(SingleLineWidth), _BoldLineWidth);
+            AvaloniaProperty.Register<Rule, double>(nameof(SingleLineWidth), defaultValue: _BoldLineWidth);
 
         public static readonly StyledProperty<double> LineMarginProperty =
-            AvaloniaProperty.Register<Rule, double>(nameof(LineMargin), _LineMargin);
+            AvaloniaProperty.Register<Rule, double>(nameof(LineMargin), defaultValue: _LineMargin);
 
         static Rule()
         {
@@ -34,40 +38,43 @@ namespace Markdown.Avalonia.Controls
                 LineMarginProperty);
         }
 
+
+        public double SingleLineWidth
+        {
+            get { return GetValue(SingleLineWidthProperty); }
+            set { SetValue(SingleLineWidthProperty, value); }
+        }
+
+        public double BoldLineWidth
+        {
+            get { return GetValue(BoldLineWidthProperty); }
+            set { SetValue(BoldLineWidthProperty, value); }
+        }
+
+        public double LineMargin
+        {
+            get { return GetValue(LineMarginProperty); }
+            set { SetValue(LineMarginProperty, value); }
+        }
+
+
+        public RuleType Type
+        {
+            get; set;
+        }
+
         public Rule(RuleType ruleType)
         {
-            Type = ruleType;
-            HorizontalAlignment = HAlign.Stretch;
-            VerticalAlignment = VAlign.Center;
+            this.Type = ruleType;
+            this.HorizontalAlignment = HAlign.Stretch;
+            this.VerticalAlignment = VAlign.Center;
 
             var cls = Enum.GetName(typeof(RuleType), ruleType);
             if (cls is null)
                 throw new ArgumentException(nameof(ruleType));
 
-            Classes.Add(cls);
+            this.Classes.Add(cls);
         }
-
-
-        public double SingleLineWidth
-        {
-            get => GetValue(SingleLineWidthProperty);
-            set => SetValue(SingleLineWidthProperty, value);
-        }
-
-        public double BoldLineWidth
-        {
-            get => GetValue(BoldLineWidthProperty);
-            set => SetValue(BoldLineWidthProperty, value);
-        }
-
-        public double LineMargin
-        {
-            get => GetValue(LineMarginProperty);
-            set => SetValue(LineMarginProperty, value);
-        }
-
-
-        public RuleType Type { get; set; }
 
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -85,7 +92,7 @@ namespace Markdown.Avalonia.Controls
                 RuleType.BoldWithSingle
                     => new Size(10, LineMargin * 2 + SingleLineWidth * 2 + BoldLineWidth),
 
-                _ => throw new InvalidOperationException()
+                _ => throw new InvalidOperationException(),
             };
         }
 
@@ -145,6 +152,7 @@ namespace Markdown.Avalonia.Controls
                     throw new InvalidOperationException();
             }
         }
+
     }
 
     public enum RuleType
@@ -152,6 +160,6 @@ namespace Markdown.Avalonia.Controls
         Single,
         TwoLines,
         Bold,
-        BoldWithSingle
+        BoldWithSingle,
     }
 }

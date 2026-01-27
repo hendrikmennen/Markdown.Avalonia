@@ -1,13 +1,17 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace Markdown.Avalonia
 {
     public static class EmojiTable
     {
-        private static ConcurrentDictionary<string, string> s_keywords;
+        private static ConcurrentDictionary<String, String> s_keywords;
 
         static EmojiTable()
         {
@@ -18,7 +22,7 @@ namespace Markdown.Avalonia
         /*
             Workaround for Visual Studio Xaml Designer.
             When you open MarkdownStyle from Xaml Designer,
-            A null error occurs. Perhaps static constructor is not executed.
+            A null error occurs. Perhaps static constructor is not executed.         
         */
         private static ConcurrentDictionary<string, string> LoadTxt()
         {
@@ -26,7 +30,7 @@ namespace Markdown.Avalonia
 
             var dic = new ConcurrentDictionary<string, string>();
 
-            var asm = typeof(EmojiTable).Assembly;
+            Assembly asm = typeof(EmojiTable).Assembly;
             using var stream = asm.GetManifestResourceStream(resourceName);
             Debug.Assert(stream is not null);
 
@@ -52,5 +56,6 @@ namespace Markdown.Avalonia
 
             return s_keywords.TryGetValue(keyword, out emoji);
         }
+
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace Markdown.Avalonia.Utils
 {
-    internal static class InterassemblyUtil
+    static class InterassemblyUtil
     {
-        public static T? InvokeInstanceMethodToGetProperty<T>(string asmNm, string typeNm, string methodNm,
-            params object[] methodArgs) where T : class
+        public static T? InvokeInstanceMethodToGetProperty<T>(string asmNm, string typeNm, string methodNm, params object[] methodArgs) where T : class
         {
             var asm = Assembly.Load(asmNm);
             var setupTp = asm.GetType(typeNm);

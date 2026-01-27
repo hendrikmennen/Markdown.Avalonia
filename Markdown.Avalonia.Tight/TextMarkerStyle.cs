@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ColorDocument.Avalonia.DocumentElements;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Markdown.Avalonia
 {
@@ -15,45 +18,28 @@ namespace Markdown.Avalonia
         UpperLatin,
         UpperRoman,
 
-        Square
+        Square,
     }
 
     public static class MarkdownStyleExt
     {
-        public static string CreateMakerText(this TextMarkerStyle textMarker, int index)
+        public static ColorDocument.Avalonia.DocumentElements.TextMarkerStyle Change(this TextMarkerStyle style)
         {
-            switch (textMarker)
+            return style switch
             {
-                default:
-                    throw new InvalidOperationException("sorry library manager forget to modify about listmerker.");
-
-                case TextMarkerStyle.Disc:
-                    return "•";
-
-                case TextMarkerStyle.Box:
-                    return "▪";
-
-                case TextMarkerStyle.Circle:
-                    return "○";
-
-                case TextMarkerStyle.Square:
-                    return "❏";
-
-                case TextMarkerStyle.Decimal:
-                    return (index + 1) + ".";
-
-                case TextMarkerStyle.LowerLatin:
-                    return NumberToOrder.ToLatin(index + 1).ToLower() + ".";
-
-                case TextMarkerStyle.UpperLatin:
-                    return NumberToOrder.ToLatin(index + 1) + ".";
-
-                case TextMarkerStyle.LowerRoman:
-                    return NumberToOrder.ToRoman(index + 1).ToLower() + ".";
-
-                case TextMarkerStyle.UpperRoman:
-                    return NumberToOrder.ToRoman(index + 1) + ".";
-            }
+                TextMarkerStyle.Box => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.Box,
+                TextMarkerStyle.Circle => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.Circle,
+                TextMarkerStyle.Decimal => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.Decimal,
+                TextMarkerStyle.Disc => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.Disc,
+                TextMarkerStyle.LowerLatin => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.LowerLatin,
+                TextMarkerStyle.LowerRoman => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.LowerRoman,
+                TextMarkerStyle.UpperLatin => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.UpperLatin,
+                TextMarkerStyle.UpperRoman => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.UpperRoman,
+                TextMarkerStyle.Square => ColorDocument.Avalonia.DocumentElements.TextMarkerStyle.Square,
+            };
         }
+
+        public static string CreateMakerText(this TextMarkerStyle textMarker, int index)
+            => textMarker.Change().CreateMakerText(index);
     }
 }

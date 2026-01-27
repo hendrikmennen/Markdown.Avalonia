@@ -1,38 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ColorTextBlock.Avalonia.Geometries
 {
     public class DecoratorGeometry : CGeometry
     {
-        private Action<Control>? _OnClick;
+        public CGeometry[] Targets { get; }
+        public Border Decorate { get; }
 
         private Action<Control>? _OnMouseEnter;
         private Action<Control>? _OnMouseLeave;
         private Action<Control>? _OnMousePressed;
         private Action<Control>? _OnMouseReleased;
-
-        private DecoratorGeometry(
-            double w, double h, double lh,
-            CSpan owner,
-            CGeometry[] targets,
-            Border decorate) : base(
-            w, h, lh,
-            owner.TextVerticalAlignment,
-            targets[targets.Length - 1].LineBreak)
-        {
-            Owner = owner;
-            Targets = targets;
-            Decorate = decorate;
-        }
-
-        public CSpan Owner { get; }
-        public CGeometry[] Targets { get; }
-        public Border Decorate { get; }
+        private Action<Control>? _OnClick;
 
         public override Action<Control>? OnMouseEnter
         {
@@ -44,7 +31,6 @@ namespace ColorTextBlock.Avalonia.Geometries
             };
             set => _OnMouseEnter = value;
         }
-
         public override Action<Control>? OnMouseLeave
         {
             get => ctrl =>
@@ -55,7 +41,6 @@ namespace ColorTextBlock.Avalonia.Geometries
             };
             set => _OnMouseLeave = value;
         }
-
         public override Action<Control>? OnMousePressed
         {
             get => ctrl =>
@@ -66,7 +51,6 @@ namespace ColorTextBlock.Avalonia.Geometries
             };
             set => _OnMousePressed = value;
         }
-
         public override Action<Control>? OnMouseReleased
         {
             get => ctrl =>
@@ -77,7 +61,6 @@ namespace ColorTextBlock.Avalonia.Geometries
             };
             set => _OnMouseReleased = value;
         }
-
         public override Action<Control>? OnClick
         {
             get => ctrl =>
@@ -103,10 +86,7 @@ namespace ColorTextBlock.Avalonia.Geometries
             double baseHeight = 0;
             double baseHeight2 = 0;
 
-            void Max(ref double v1, double v2)
-            {
-                v1 = Math.Max(v1, v2);
-            }
+            void Max(ref double v1, double v2) => v1 = Math.Max(v1, v2);
 
             foreach (var one in oneline)
             {
@@ -139,6 +119,7 @@ namespace ColorTextBlock.Avalonia.Geometries
                     default:
                         throw new InvalidOperationException("sorry library manager forget to modify.");
                 }
+
             }
 
             Max(ref height, descentHeightTop + descentHeightBtm);
@@ -154,17 +135,23 @@ namespace ColorTextBlock.Avalonia.Geometries
                 decorate);
         }
 
-        public override void Render(DrawingContext ctx)
+        private DecoratorGeometry(
+            double w, double h, double lh,
+            CSpan owner,
+            CGeometry[] targets,
+            Border decorate) : base(
+                owner,
+                w, h, lh,
+                owner.TextVerticalAlignment,
+                targets[targets.Length - 1].LineBreak)
         {
-            using (ctx.PushTransform(Matrix.CreateTranslation(Left + Decorate.Margin.Left, Top + Decorate.Margin.Top)))
-            {
-                Decorate.Background = Owner.Background;
-                Decorate.Arrange(new Rect(0, 0, Width, Height));
-                Decorate.Render(ctx);
-            }
+            this.Targets = targets;
+            this.Decorate = decorate;
+        }
 
+        public override void Arranged()
+        {
             var left = Left + Decorate.BorderThickness.Left + Decorate.Padding.Left + Decorate.Margin.Left;
-
             var top = Top + Decorate.BorderThickness.Top + Decorate.Padding.Top + Decorate.Margin.Top;
             var btm = Top + Height - Decorate.BorderThickness.Bottom - Decorate.Padding.Bottom - Decorate.Margin.Bottom;
 
@@ -172,29 +159,100 @@ namespace ColorTextBlock.Avalonia.Geometries
             {
                 target.Left = left;
 
-                switch (target.TextVerticalAlignment)
+                target.Top = target.TextVerticalAlignment switch
                 {
-                    case TextVerticalAlignment.Top:
-                        target.Top = top;
-                        break;
+                    TextVerticalAlignment.Top
+                        => top,
 
-                    case TextVerticalAlignment.Center:
-                        target.Top = (top + btm - target.Height) / 2;
-                        break;
+                    TextVerticalAlignment.Center
+                        => (top + btm - target.Height) / 2,
 
-                    case TextVerticalAlignment.Bottom:
-                        target.Top = btm - target.Height;
-                        break;
+                    TextVerticalAlignment.Bottom
+                        => btm - target.Height,
 
-                    case TextVerticalAlignment.Base:
-                        target.Top = Top + BaseHeight - target.BaseHeight;
-                        break;
-                }
+                    TextVerticalAlignment.Base
+                        => Top + BaseHeight - target.BaseHeight,
 
-                target.Render(ctx);
+                    _ => throw new InvalidOperationException("sorry library manager forget to modify.")
+                };
 
                 left += target.Width;
+
+                target.Arranged();
             }
+        }
+
+        public override void Render(DrawingContext ctx)
+        {
+            using (ctx.PushTransform(Matrix.CreateTranslation(Left + Decorate.Margin.Left, Top + Decorate.Margin.Top)))
+            {
+                Decorate.Background = Owner.Background;
+                Decorate.Arrange(new Rect(0, 0, Width, Height));
+                Decorate.Render(ctx);
+
+            }
+
+            foreach (var target in Targets)
+                target.Render(ctx);
+        }
+
+        public override TextPointer CalcuatePointerFrom(double x, double y)
+        {
+            if (x < Left)
+            {
+                return GetBegin();
+            }
+
+            int indexAdd = 0;
+            foreach (var target in Targets.Take(Targets.Length - 1))
+            {
+                if (x <= target.Left + target.Width)
+                {
+                    return target.CalcuatePointerFrom(x, y)
+                                 .Wrap(Owner, indexAdd);
+                }
+                else
+                {
+                    indexAdd += target.CaretLength;
+                }
+            }
+
+            return Targets[Targets.Length - 1].GetEnd().Wrap(Owner, indexAdd);
+        }
+
+        public override TextPointer CalcuatePointerFrom(int index)
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            int relindex = index;
+            foreach (var target in Targets)
+            {
+                if (relindex < target.CaretLength)
+                {
+                    return target.CalcuatePointerFrom(relindex)
+                                 .Wrap(Owner, index - relindex);
+                }
+
+                relindex -= target.CaretLength;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+
+        public override TextPointer GetBegin()
+        {
+            var pointer = Targets[0].GetBegin();
+            return pointer.Wrap(Owner, 0);
+        }
+
+        public override TextPointer GetEnd()
+        {
+            var pointer = Targets[Targets.Length - 1].GetEnd();
+
+            int indexAdd = Targets.Take(Targets.Length - 1).Sum(t => t.CaretLength);
+            return pointer.Wrap(Owner, indexAdd);
         }
     }
 }

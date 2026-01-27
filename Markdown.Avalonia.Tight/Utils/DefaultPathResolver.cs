@@ -1,9 +1,14 @@
-﻿using System;
+﻿using Avalonia.Controls;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using Avalonia.Platform;
 
 namespace Markdown.Avalonia.Utils
 {
@@ -26,6 +31,7 @@ namespace Markdown.Avalonia.Utils
             }
 
             if (CallerAssemblyNames is not null)
+            {
                 foreach (var asmNm in CallerAssemblyNames)
                 {
                     var assetUrl = new Uri($"avares://{asmNm}/{relativeOrAbsolutePath}");
@@ -34,14 +40,19 @@ namespace Markdown.Avalonia.Utils
                     if (stream is not null)
                         return stream;
                 }
+            }
 
             if (AssetPathRoot is not null)
             {
                 Uri pathUri;
                 if (Path.IsPathRooted(AssetPathRoot))
+                {
                     pathUri = new Uri(Path.Combine(AssetPathRoot, relativeOrAbsolutePath));
+                }
                 else
+                {
                     pathUri = new Uri(new Uri(AssetPathRoot), relativeOrAbsolutePath);
+                }
 
                 var stream = await OpenStream(pathUri);
                 if (stream is not null)
@@ -75,4 +86,5 @@ namespace Markdown.Avalonia.Utils
             }
         }
     }
+
 }

@@ -1,22 +1,24 @@
-﻿using System;
+﻿using Avalonia.Platform;
+using Avalonia;
+using AvaloniaEdit.Highlighting.Xshd;
+using AvaloniaEdit.Highlighting;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
+using System.Text;
 using System.Xml;
-using Avalonia.Platform;
-using AvaloniaEdit.Highlighting;
-using AvaloniaEdit.Highlighting.Xshd;
+using System.Linq;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
     public class SyntaxHighlightProvider
     {
-        private readonly ObservableCollection<Alias> _aliases;
-        private readonly Dictionary<string, IHighlightingDefinition> _definitions;
+        private ObservableCollection<Alias> _aliases;
 
-        private readonly Dictionary<string, string> _nameSolver;
+        private Dictionary<string, string> _nameSolver;
+        private Dictionary<string, IHighlightingDefinition> _definitions;
 
         public SyntaxHighlightProvider(ObservableCollection<Alias> aliases)
         {
@@ -59,16 +61,14 @@ namespace Markdown.Avalonia.SyntaxHigh
                 adding = arg.NewItems.Cast<Alias>();
             }
             else
-            {
                 adding = Array.Empty<Alias>();
-            }
 
 
             foreach (var alias in adding)
             {
                 if (alias.Name is null) continue;
 
-                if (!string.IsNullOrEmpty(alias.RealName))
+                if (!String.IsNullOrEmpty(alias.RealName))
                 {
                     _nameSolver[alias.Name] = alias.RealName;
                 }
@@ -103,10 +103,14 @@ namespace Markdown.Avalonia.SyntaxHigh
             switch (source.Scheme)
             {
                 case "file":
-                    return File.Exists(source.LocalPath) ? Open(File.OpenRead(source.LocalPath)) : null;
+                    return File.Exists(source.LocalPath) ?
+                        Open(File.OpenRead(source.LocalPath)) :
+                        null;
 
                 case "avares":
-                    return AssetLoader.Exists(source) ? Open(AssetLoader.Open(source)) : null;
+                    return AssetLoader.Exists(source) ?
+                        Open(AssetLoader.Open(source)) :
+                        null;
 
                 default:
                     throw new ArgumentException($"unsupport scheme '{source.Scheme}'");
@@ -117,9 +121,7 @@ namespace Markdown.Avalonia.SyntaxHigh
                 try
                 {
                     using (var reader = XmlReader.Create(stream))
-                    {
                         return HighlightingLoader.Load(reader, HighlightingManager.Instance);
-                    }
                 }
                 finally
                 {

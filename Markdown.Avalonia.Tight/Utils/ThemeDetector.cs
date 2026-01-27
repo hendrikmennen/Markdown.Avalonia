@@ -1,9 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Styling;
+
 
 namespace Markdown.Avalonia.Utils
 {
-    internal static class ThemeDetector
+    static class ThemeDetector
     {
         private static readonly string s_SimpleThemeFQCN = "Avalonia.Themes.Simple.SimpleTheme";
         private static readonly string s_FluentThemeFQCN = "Avalonia.Themes.Fluent.FluentTheme";
@@ -13,9 +15,37 @@ namespace Markdown.Avalonia.Utils
         private static readonly string s_FluentThemeHost = "Avalonia.Themes.Fluent";
         private static readonly string s_FluentAvaloniaHost = "FluentAvalonia";
 
-        private static bool? s_isSimpleUsed;
-        private static bool? s_isFluentUsed;
-        private static bool? s_isFluentAvaloniaUsed;
+        static bool? s_isSimpleUsed;
+        static bool? s_isFluentUsed;
+        static bool? s_isFluentAvaloniaUsed;
+
+        private static bool? CheckApplicationCurrentStyle(string themeFQCN, string avaresHost)
+        {
+            if (Application.Current is null
+                    || Application.Current.Styles is null)
+                return null;
+
+            foreach (var style in Application.Current.Styles)
+            {
+                if (style.GetType().FullName == themeFQCN)
+                {
+                    return true;
+                }
+                if (style is StyleInclude incld)
+                {
+                    var uri = incld.Source;
+
+                    if (uri is null) return false;
+                    if (!uri.IsAbsoluteUri) return false;
+
+                    try { return uri.Host == avaresHost; }
+                    catch { return false; }
+                }
+                else return false;
+            }
+
+            return false;
+        }
 
         public static bool? IsSimpleUsed
         {
@@ -48,41 +78,8 @@ namespace Markdown.Avalonia.Utils
                 if (s_isFluentAvaloniaUsed.HasValue)
                     return s_isFluentAvaloniaUsed;
 
-                return s_isFluentAvaloniaUsed =
-                    CheckApplicationCurrentStyle(s_FluentAvaloniaFQCN, s_FluentAvaloniaHost);
+                return s_isFluentAvaloniaUsed = CheckApplicationCurrentStyle(s_FluentAvaloniaFQCN, s_FluentAvaloniaHost);
             }
-        }
-
-        private static bool? CheckApplicationCurrentStyle(string themeFQCN, string avaresHost)
-        {
-            if (Application.Current is null
-                || Application.Current.Styles is null)
-                return null;
-
-            foreach (var style in Application.Current.Styles)
-            {
-                if (style.GetType().FullName == themeFQCN) return true;
-                if (style is StyleInclude incld)
-                {
-                    var uri = incld.Source;
-
-                    if (uri is null) return false;
-                    if (!uri.IsAbsoluteUri) return false;
-
-                    try
-                    {
-                        return uri.Host == avaresHost;
-                    }
-                    catch
-                    {
-                        return false;
-                    }
-                }
-
-                return false;
-            }
-
-            return false;
         }
     }
 }

@@ -5,12 +5,14 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
     <PackageId>Markdown.Avalonia.Html</PackageId>
     <Version>$(PackageVersion)</Version>
     <Authors>whistyun</Authors>
     <Description>html tag processor for Markdown.Avalonia</Description>     
     <Copyright>© Simon Baynes 2013; whistyun 2023</Copyright>        
     <PackageProjectUrl>https://github.com/HendrikMennen/Markdown.Avalonia</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/whistyun/Markdown.Avalonia</PackageProjectUrl>
     <PackageReadmeFile>Markdown.Avalonia.Html.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company />
@@ -28,6 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.3.3" />
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
   </ItemGroup>
   

@@ -1,10 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Media;
+using Avalonia.Styling;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace Markdown.Avalonia.Extensions
 {
@@ -13,14 +20,12 @@ namespace Markdown.Avalonia.Extensions
         private readonly string _resourceKey;
         private readonly double _scale;
 
-        public MultiplyExtension(string resourceKey) : this(resourceKey, 1)
-        {
-        }
+        public MultiplyExtension(string resourceKey) : this(resourceKey, 1) { }
 
         public MultiplyExtension(string resourceKey, double scale)
         {
-            _resourceKey = resourceKey;
-            _scale = scale;
+            this._resourceKey = resourceKey;
+            this._scale = scale;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
@@ -29,21 +34,21 @@ namespace Markdown.Avalonia.Extensions
 
             var brush = dyExt.ProvideValue(serviceProvider);
 
-            return new MultiBinding
+            return new MultiBinding()
             {
-                Bindings = new[] { brush },
+                Bindings = new IBinding[] { brush },
                 Converter = new MultiplyConverter(_scale)
             };
         }
 
-        private class MultiplyConverter : IMultiValueConverter
+        class MultiplyConverter : IMultiValueConverter
         {
+            public double Scale { get; }
+
             public MultiplyConverter(double scale)
             {
                 Scale = scale;
             }
-
-            public double Scale { get; }
 
             public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
             {
@@ -53,8 +58,8 @@ namespace Markdown.Avalonia.Extensions
                     int i => (int)(i * Scale),
                     long l => (long)(l * Scale),
                     float f => (float)(f * Scale),
-                    double d => d * Scale,
-                    _ => values[0]
+                    double d => (double)(d * Scale),
+                    _ => values[0],
                 };
             }
         }

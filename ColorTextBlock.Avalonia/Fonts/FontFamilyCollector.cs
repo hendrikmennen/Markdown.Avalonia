@@ -1,5 +1,8 @@
-﻿using System.Linq;
-using Avalonia.Media;
+﻿using Avalonia.Media;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace ColorTextBlock.Avalonia.Fonts
 {
@@ -7,8 +10,7 @@ namespace ColorTextBlock.Avalonia.Fonts
     {
         public static FontFamily? TryGetMonospace()
         {
-            string[] RequestFamilies =
-            {
+            string[] RequestFamilies = {
                 "menlo",
                 "monaco",
                 "consolas",
@@ -16,12 +18,12 @@ namespace ColorTextBlock.Avalonia.Fonts
                 "inconsolata",
                 "courier new",
                 "monospace",
-                "dejavu sans mono"
+                "dejavu sans mono",
             };
 
             var monospaceName = FontManager.Current.SystemFonts
-                .Where(family => RequestFamilies.Any(reqNm => family.Name.ToLower().Contains(reqNm)))
-                .FirstOrDefault();
+                                           .Where(family => RequestFamilies.Any(reqNm => family.Name.ToLower().Contains(reqNm)))
+                                           .FirstOrDefault();
 
             return monospaceName;
         }

@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Input;
 
 namespace Markdown.Avalonia.Utils
 {
     public class DefaultHyperlinkCommand : ICommand
     {
-        private bool _isExecutable = true;
+        public event EventHandler? CanExecuteChanged;
 
+        private bool _isExecutable = true;
         public bool IsExecutable
         {
             get => _isExecutable;
@@ -21,8 +24,6 @@ namespace Markdown.Avalonia.Utils
                 }
             }
         }
-
-        public event EventHandler? CanExecuteChanged;
 
         public bool CanExecute(object? parameter)
         {

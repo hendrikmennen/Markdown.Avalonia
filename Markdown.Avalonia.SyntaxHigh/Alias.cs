@@ -4,9 +4,10 @@ namespace Markdown.Avalonia.SyntaxHigh
 {
     public class Alias
     {
+        public string? Name { get; set; }
+
         private string? _realName;
         private Uri? _xshd;
-        public string? Name { get; set; }
 
 
         public string? RealName
@@ -18,7 +19,6 @@ namespace Markdown.Avalonia.SyntaxHigh
                 Validation(nameof(RealName));
             }
         }
-
         public Uri? XSHD
         {
             get => _xshd;
@@ -32,7 +32,10 @@ namespace Markdown.Avalonia.SyntaxHigh
 
         private void Validation(string name)
         {
-            if (_realName != null && _xshd != null) throw new ArgumentException(name);
+            if (_realName != null && _xshd != null)
+            {
+                throw new ArgumentException(name);
+            }
         }
     }
 }
