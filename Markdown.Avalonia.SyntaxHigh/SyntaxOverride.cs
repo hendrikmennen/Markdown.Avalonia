@@ -13,27 +13,34 @@ using System.Collections.ObjectModel;
 using Markdown.Avalonia.SyntaxHigh.Extensions;
 using Markdown.Avalonia.Parsers;
 using System.Diagnostics;
+using AvaloniaEdit.TextMate;
 using ColorDocument.Avalonia;
 using ColorDocument.Avalonia.DocumentElements;
+using TextMateSharp.Themes;
 
 namespace Markdown.Avalonia.SyntaxHigh
 {
-    internal class SyntaxOverride : BlockOverride2
+    public class SyntaxOverride : IBlockOverride
     {
+        public static IRawTheme? CurrentEditorTheme;
+        public static IAdvancedRegistryOptions? RegistryOptions;
+        private readonly SetupInfo _info;
         private SyntaxHighlightProvider _provider;
-        private SetupInfo _info;
 
-        public SyntaxOverride(ObservableCollection<Alias> aliases, SetupInfo info) : base("CodeBlocksWithLangEvaluator")
+
+        public SyntaxOverride(ObservableCollection<Alias> aliases, SetupInfo info)
         {
             _provider = new SyntaxHighlightProvider(aliases);
             _info = info;
         }
 
-        public override IEnumerable<DocumentElement>? Convert2(
+        public string ParserName => "CodeBlocksWithLangEvaluator";
+
+        public IEnumerable<Control>? Convert(
             string text,
             Match match,
             ParseStatus status,
-            IMarkdownEngine2 engine,
+            IMarkdownEngine engine,
             out int parseTextBegin, out int parseTextEnd)
         {
             var closeTagPattern = new Regex($"\n[ ]*{match.Groups[1].Value}[ ]*\n");
@@ -58,52 +65,61 @@ namespace Markdown.Avalonia.SyntaxHigh
 
             parseTextBegin = match.Index;
 
-            string code = text.Substring(match.Index + match.Length, codeEndIndex - (match.Index + match.Length));
-            string lang = match.Groups[2].Value;
+            var code = text.Substring(match.Index + match.Length, codeEndIndex - (match.Index + match.Length));
+            var lang = match.Groups[2].Value;
 
             return Convert(lang, code);
         }
 
-        private IEnumerable<DocumentElement> Convert(string lang, string code)
+        private IEnumerable<Control> Convert(string lang, string code)
         {
-            if (String.IsNullOrEmpty(lang))
+            if (string.IsNullOrEmpty(lang))
             {
-                yield return new PlainCodeBlockElement(code);
+                var ctxt = new TextBlock
+                {
+                    Text = code,
+                    TextWrapping = TextWrapping.NoWrap
+                };
+                ctxt.Classes.Add(Markdown.CodeBlockClass);
+
+                var scrl = new ScrollViewer();
+                scrl.Classes.Add(Markdown.CodeBlockClass);
+                scrl.Content = ctxt;
+                scrl.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+                var result = new Border();
+                result.Classes.Add(Markdown.CodeBlockClass);
+                result.Child = scrl;
+
+                yield return result;
             }
             else
             {
-                // check wheither style is set
-                if (!ThemeDetector.IsAvalonEditSetup)
+                var txtEdit = new TextEditor
                 {
-                    SetupStyle();
+                    Tag = lang,
+                    Text = code,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    IsReadOnly = true
+                };
+
+                txtEdit.Tag = lang;
+
+                if (RegistryOptions?.GetScopeByLanguageId(lang) is { } scope)
+                {
+                    var textMate = txtEdit.InstallTextMate(RegistryOptions);
+                    textMate.SetGrammar(scope);
+                    textMate.SetTheme(CurrentEditorTheme ?? RegistryOptions.GetDefaultTheme());
+
+                    txtEdit.DetachedFromVisualTree += (_, _) => { textMate.Dispose(); };
                 }
 
-                yield return new CodeBlockElement(_provider, lang, code);
+                var result = new Border();
+                result.Classes.Add(Markdown.CodeBlockClass);
+                result.Child = txtEdit;
+
+                yield return result;
             }
-        }
-
-        private static void SetupStyle()
-        {
-            if (Application.Current is null)
-                return;
-
-            string resourceUriTxt;
-            if (ThemeDetector.IsFluentUsed)
-                resourceUriTxt = "avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml";
-            else if (ThemeDetector.IsSimpleUsed)
-                resourceUriTxt = "avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml";
-            else
-            {
-                Debug.Print("Markdown.Avalonia.SyntaxHigh can't add style for AvaloniaEdit. See https://github.com/whistyun/Markdown.Avalonia/wiki/Setup-AvaloniaEdit-for-syntax-hightlighting");
-                return;
-            }
-
-            var aeStyle = new StyleInclude(new Uri("avares://Markdown.Avalonia/"))
-            {
-                Source = new Uri(resourceUriTxt)
-            };
-
-            Application.Current.Styles.Add(aeStyle);
         }
     }
 }

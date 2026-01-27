@@ -39,7 +39,6 @@ namespace Markdown.Avalonia.Html.Core.Parsers.MarkdigExtensions
 
             foreach (var caption in captionBlock)
             {
-                DockPanel.SetDock(caption, Dock.Top);
                 section.Children.Add(caption);
             }
 

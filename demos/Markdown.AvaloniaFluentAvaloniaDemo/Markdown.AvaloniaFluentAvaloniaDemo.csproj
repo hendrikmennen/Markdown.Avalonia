@@ -5,8 +5,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <IsPackable>false</IsPackable>
-  <TargetFramework>net9.0</TargetFramework>
-    <TargetFrameworks>$(DemoAppTargetFrameworks)</TargetFrameworks>
+  <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <LangVersion>9</LangVersion>
     <Nullable>disable</Nullable>
   </PropertyGroup>
@@ -20,9 +20,9 @@
     <PackageReference Include="Avalonia.Desktop" Version="$(DemoAvaloniaVersion)" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.0.0-preview6" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.0.5" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="$(DemoAvaloniaVersion)" />
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="$(DemoAvaloniaVersion)" />
     <None Remove="Assets\XamlTemplate.txt" />
+    <PackageReference Include="ReactiveUI.Avalonia" Version="11.3.8" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\tests\UnitTest.Base\Utils\BrokenXamlWriter.cs" Link="BrokenXamlWriter.cs" />

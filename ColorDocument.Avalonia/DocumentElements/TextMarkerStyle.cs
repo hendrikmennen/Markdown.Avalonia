@@ -1,9 +1,5 @@
-<<<<<<<< HEAD:Markdown.Avalonia.Tight/TextMarkerStyle.cs
-﻿using System;
-========
-﻿using Markdown.Avalonia;
 using System;
->>>>>>>> refs/remotes/upstream/master:ColorDocument.Avalonia/DocumentElements/TextMarkerStyle.cs
+using Markdown.Avalonia;
 
 namespace ColorDocument.Avalonia.DocumentElements
 {

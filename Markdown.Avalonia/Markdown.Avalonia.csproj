@@ -3,11 +3,11 @@
   <Import Project="..\Markdown.Avalonia.props" />
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Version>$(PackageVersion)</Version>
     <Authors>Bevan Arps(original); whistyun; Hendrik Mennen</Authors>
     <PackageId>OneWare.Markdown.Avalonia</PackageId>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+   <TargetFramework>net10.0</TargetFramework>
     <Version>$(PackageVersion)</Version>
     <Authors>Bevan Arps(original); whistyun</Authors>
     <PackageId>Markdown.Avalonia</PackageId>

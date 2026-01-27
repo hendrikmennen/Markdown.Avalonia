@@ -121,7 +121,6 @@ namespace Markdown.Avalonia.Html.Core.Parsers.MarkdigExtensions
                 {
                     foreach (var caption in manager.ParseChildrenAndGroup(captionNode))
                     {
-                        DockPanel.SetDock(caption, Dock.Top);
                         caption.Classes.Add(Tags.TagTableCaption.GetClass());
                         section.Children.Add(caption);
                     }

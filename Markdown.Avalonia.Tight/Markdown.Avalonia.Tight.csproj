@@ -4,7 +4,7 @@
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <PackageId>OneWare.Markdown.Avalonia.Tight</PackageId>
         <AssemblyName>Markdown.Avalonia</AssemblyName>
         <RootNamespace>Markdown.Avalonia</RootNamespace>
@@ -27,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.3.3" />
+        <PackageReference Include="Avalonia" Version="11.3.11" />
     </ItemGroup>
 
     <ItemGroup>
@@ -61,7 +61,7 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFrameworks>$(PackageTargetFrameworks)</TargetFrameworks>
+   <TargetFramework>net10.0</TargetFramework>
     <PackageId>Markdown.Avalonia.Tight</PackageId>
     <AssemblyName>Markdown.Avalonia</AssemblyName>
     <RootNamespace>Markdown.Avalonia</RootNamespace>
@@ -94,10 +94,6 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\ImageNotFound.bmp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="EmojiTable.txt" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,8 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-
-        xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
         xmlns:vm="clr-namespace:Markdown.AvaloniaDemo.ViewModels;assembly=Markdown.AvaloniaDemo"
         xmlns:local="clr-namespace:Markdown.AvaloniaDemo;assembly=Markdown.AvaloniaDemo"
 
@@ -128,6 +126,7 @@
       VerticalAlignment="Stretch"
       MarkdownStyleName="{Binding SelectedStyle.Name}"
       SaveScrollValueWhenContentUpdated="True"
+      SelectionEnabled="True"
       Markdown="{Binding Text}"
       HeaderScrolled="HeaderScrolled"
       
