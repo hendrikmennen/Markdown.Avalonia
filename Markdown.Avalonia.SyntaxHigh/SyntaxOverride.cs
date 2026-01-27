@@ -46,26 +46,25 @@ namespace Markdown.Avalonia.SyntaxHigh
             var closeTagPattern = new Regex($"\n[ ]*{match.Groups[1].Value}[ ]*\n");
             var closeTagMatch = closeTagPattern.Match(text, match.Index + match.Length);
 
+            parseTextBegin = match.Index;
+
             int codeEndIndex;
             if (closeTagMatch.Success)
             {
                 codeEndIndex = closeTagMatch.Index;
                 parseTextEnd = closeTagMatch.Index + closeTagMatch.Length;
             }
-            else if (_info.EnablePreRenderingCodeBlock)
+            else
             {
+                // 🔥 NEW: unterminated block → render until end
                 codeEndIndex = text.Length;
                 parseTextEnd = text.Length;
             }
-            else
-            {
-                parseTextBegin = parseTextEnd = -1;
-                return null;
-            }
 
-            parseTextBegin = match.Index;
+            var code = text.Substring(
+                match.Index + match.Length,
+                codeEndIndex - (match.Index + match.Length));
 
-            var code = text.Substring(match.Index + match.Length, codeEndIndex - (match.Index + match.Length));
             var lang = match.Groups[2].Value;
 
             return Convert(lang, code);
