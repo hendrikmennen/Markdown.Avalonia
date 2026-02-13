@@ -1,4 +1,5 @@
-﻿using Avalonia.Data;
+﻿using Avalonia;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -58,23 +59,28 @@ namespace Markdown.Avalonia.Extensions
             Relate = relate;
         }
 
-        public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
-        {
-            Color colL;
-            if (values[0] is ISolidColorBrush bl)
-                colL = bl.Color;
-            else if (values[0] is Color cl)
-                colL = cl;
-            else
-                return values[0];
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (values.Count < 2
+            || values[0] is null || values[0] == AvaloniaProperty.UnsetValue
+            || values[1] is null || values[1] == AvaloniaProperty.UnsetValue)
+            return AvaloniaProperty.UnsetValue;
 
-            Color colR;
-            if (values[1] is ISolidColorBrush br)
-                colR = br.Color;
-            else if (values[1] is Color cr)
-                colR = cr;
-            else
-                return values[0];
+        Color colL;
+        if (values[0] is ISolidColorBrush bl)
+            colL = bl.Color;
+        else if (values[0] is Color cl)
+            colL = cl;
+        else
+            return AvaloniaProperty.UnsetValue;
+
+        Color colR;
+        if (values[1] is ISolidColorBrush br)
+            colR = br.Color;
+        else if (values[1] is Color cr)
+            colR = cr;
+        else
+            return AvaloniaProperty.UnsetValue;
 
             static byte Calc(byte l, byte r, double d)
                 => (byte)(l * (1 - d) + r * d);

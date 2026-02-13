@@ -1,4 +1,5 @@
-﻿using Avalonia.Data;
+﻿using Avalonia;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -39,13 +40,18 @@ namespace Markdown.Avalonia.Extensions
 
             public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
             {
+                if (values.Count < 1 || values[0] is null || values[0] == AvaloniaProperty.UnsetValue)
+                    return AvaloniaProperty.UnsetValue;
+
                 Color c;
                 if (values[0] is ISolidColorBrush b)
                     c = b.Color;
                 else if (values[0] is Color col)
                     c = col;
+                else if (values[0] is IBrush brush)
+                    return brush;
                 else
-                    return values[0];
+                    return AvaloniaProperty.UnsetValue;
 
 
                 var rgb = new int[] { c.R, c.G, c.B };
