@@ -168,6 +168,10 @@ namespace Markdown.Avalonia
         private bool _supportStrikethrough;
         private bool _supportTextileInline;
 
+        private const char ProtectBase = '\uE000';
+        private List<IList<CInline>> _protectedInlines = new();
+        private int _spanNest;
+
         #endregion
 
         public Markdown()
@@ -441,14 +445,82 @@ namespace Markdown.Avalonia
 
         private IEnumerable<CInline> PrivateRunSpanGamut(string text)
         {
-            var rtn = new List<CInline>();
-            RunSpanRest(text, 0, text.Length, 0, rtn);
-            return rtn;
+            var top = _spanNest == 0;
+            ++_spanNest;
+            try
+            {
+                if (StrictBoldItalic)
+                {
+                    var rtn = new List<CInline>();
+                    RunSpanRest(text, 0, text.Length, 0, rtn);
+                    return rtn;
+                }
 
-            void RunSpanRest(
-                string text, int index, int length,
-                int parserStart,
-                List<CInline> outto)
+                // Inline elements such as code spans and links/images are parsed
+                // first and replaced by placeholder characters ("masking"), so that
+                // text decorations (bold/italic/...) can wrap them even when their
+                // markers surround the inline element (e.g. **`code`**).
+                if (top) _protectedInlines = new List<IList<CInline>>();
+
+                var masked = MaskInlines(text);
+                return DoTextDecorations(masked, ResolveMasked);
+            }
+            finally
+            {
+                --_spanNest;
+            }
+        }
+
+        private void RunSpanRest(
+            string text, int index, int length,
+            int parserStart,
+            List<CInline> outto)
+        {
+            for (; parserStart < _inlines.Length; ++parserStart)
+            {
+                var parser = _inlines[parserStart];
+
+                for (; ; )
+                {
+                    var match = parser.Pattern.Match(text, index, length);
+                    if (!match.Success) break;
+
+                    var rslt = parser.Convert(text, match, this, out int parseBegin, out int parserEnd);
+                    if (rslt is null) break;
+
+                    if (parseBegin > index)
+                    {
+                        RunSpanRest(text, index, parseBegin - index, parserStart + 1, outto);
+                    }
+                    outto.AddRange(rslt);
+
+                    length -= parserEnd - index;
+                    index = parserEnd;
+                }
+
+                if (length == 0) break;
+            }
+
+            if (length != 0)
+            {
+                var subtext = text.Substring(index, length);
+                outto.AddRange(DoText(subtext));
+            }
+        }
+
+        /// <summary>
+        /// Parses inline elements (code spans, links, images, plugin inlines) and
+        /// replaces each of them in the returned string by a single placeholder
+        /// character. The converted inlines are stored in <see cref="_protectedInlines"/>
+        /// and later restored by <see cref="ResolveMasked"/>.
+        /// </summary>
+        private string MaskInlines(string text)
+        {
+            var sb = new StringBuilder();
+            MaskRest(text, 0, text.Length, 0, sb);
+            return sb.ToString();
+
+            void MaskRest(string t, int index, int length, int parserStart, StringBuilder outsb)
             {
                 for (; parserStart < _inlines.Length; ++parserStart)
                 {
@@ -456,17 +528,20 @@ namespace Markdown.Avalonia
 
                     for (; ; )
                     {
-                        var match = parser.Pattern.Match(text, index, length);
+                        var match = parser.Pattern.Match(t, index, length);
                         if (!match.Success) break;
 
-                        var rslt = parser.Convert(text, match, this, out int parseBegin, out int parserEnd);
+                        var rslt = parser.Convert(t, match, this, out int parseBegin, out int parserEnd);
                         if (rslt is null) break;
 
                         if (parseBegin > index)
                         {
-                            RunSpanRest(text, index, parseBegin - index, parserStart + 1, outto);
+                            MaskRest(t, index, parseBegin - index, parserStart + 1, outsb);
                         }
-                        outto.AddRange(rslt);
+
+                        var id = _protectedInlines.Count;
+                        _protectedInlines.Add(rslt as IList<CInline> ?? rslt.ToList());
+                        outsb.Append((char)(ProtectBase + id));
 
                         length -= parserEnd - index;
                         index = parserEnd;
@@ -477,14 +552,46 @@ namespace Markdown.Avalonia
 
                 if (length != 0)
                 {
-                    var subtext = text.Substring(index, length);
-
-                    outto.AddRange(
-                        StrictBoldItalic ?
-                            DoText(subtext) :
-                            DoTextDecorations(subtext, s => DoText(s)));
+                    outsb.Append(t, index, length);
                 }
             }
+        }
+
+        /// <summary>
+        /// Restores placeholder characters produced by <see cref="MaskInlines"/> back
+        /// into their parsed inlines, converting the remaining text via <see cref="DoText"/>.
+        /// </summary>
+        private IEnumerable<CInline> ResolveMasked(string text)
+        {
+            var rtn = new List<CInline>();
+            var buff = new StringBuilder();
+
+            void Flush()
+            {
+                if (buff.Length > 0)
+                {
+                    rtn.AddRange(DoText(buff.ToString()));
+                    buff.Clear();
+                }
+            }
+
+            foreach (var ch in text)
+            {
+                var id = ch - ProtectBase;
+                if (id >= 0 && id < _protectedInlines.Count)
+                {
+                    Flush();
+                    rtn.AddRange(_protectedInlines[id]);
+                }
+                else
+                {
+                    buff.Append(ch);
+                }
+            }
+
+            Flush();
+
+            return rtn;
         }
 
 
