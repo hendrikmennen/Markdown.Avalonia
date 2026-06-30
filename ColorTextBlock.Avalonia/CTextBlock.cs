@@ -158,6 +158,14 @@ namespace ColorTextBlock.Avalonia
         private string? _text;
         private bool _measureRequested;
 
+        // Cached natural (unwrapped) width of the content. While the available
+        // width stays >= this value (and the text is left-aligned), resizing the
+        // control cannot change the wrapping, so the expensive text reflow in
+        // UpdateGeometry can be skipped entirely. This is the main optimization
+        // that keeps window resizing fast for large documents.
+        private double _naturalWidth = double.NaN;
+        private bool _isNaturalLayout;
+
         private TextPointer? _beginSelect;
         private List<CGeometry> _intermediates = new();
         private TextPointer? _endSelect;
@@ -571,6 +579,8 @@ namespace ColorTextBlock.Avalonia
         {
             SetValue(BaseHeightProperty, default);
             _measureRequested = true;
+            _naturalWidth = double.NaN;
+            _isNaturalLayout = false;
             InvalidateMeasure();
             InvalidateArrange();
         }
@@ -602,27 +612,81 @@ namespace ColorTextBlock.Avalonia
                 return finalSize;
             }
 
-            _constraint = new Size(finalSize.Width, Double.PositiveInfinity);
-            _measured = UpdateGeometry();
+            _measured = LayoutForWidth(new Size(finalSize.Width, Double.PositiveInfinity));
 
             return finalSize;
         }
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (_measured.Width == 0d || !MathUtilities.AreClose(availableSize.Width, _constraint.Width) || _measureRequested)
+            if (_measureRequested)
             {
                 _measureRequested = false;
-                _constraint = availableSize;
-                _measured = UpdateGeometry();
+                _naturalWidth = double.NaN;
+                _isNaturalLayout = false;
             }
+
+            _measured = LayoutForWidth(availableSize);
 
             InvalidateArrange();
 
             return _measured;
         }
 
-        private Size UpdateGeometry()
+        /// <summary>
+        /// Produces the layout for the given available width, reusing the
+        /// previously computed geometry whenever the new width cannot affect
+        /// wrapping. Returns the measured size.
+        /// </summary>
+        private Size LayoutForWidth(Size available)
+        {
+            var noWrap = TextWrapping == TextWrapping.NoWrap;
+
+            // Learn the natural (unwrapped) width once. It is reused across
+            // subsequent measure/arrange passes (e.g. while resizing).
+            if (double.IsNaN(_naturalWidth))
+            {
+                _constraint = available;
+                _measured = UpdateGeometry(naturalMode: true);
+                _naturalWidth = _measured.Width;
+                _isNaturalLayout = true;
+            }
+
+            // For left-aligned text the horizontal offset is always 0, so as
+            // long as the content fits without wrapping the natural layout is
+            // valid regardless of the actual width. This is the fast path that
+            // avoids re-running the text formatter while resizing.
+            var fitsNaturally =
+                TextAlignment == TextAlignment.Left
+                && (noWrap || available.Width >= _naturalWidth);
+
+            if (fitsNaturally)
+            {
+                _constraint = available;
+                if (!_isNaturalLayout)
+                {
+                    _measured = UpdateGeometry(naturalMode: true);
+                    _isNaturalLayout = true;
+                }
+                return _measured;
+            }
+
+            // Width hasn't actually changed: keep the existing constrained layout.
+            if (!_isNaturalLayout
+                && _measured.Width != 0d
+                && MathUtilities.AreClose(available.Width, _constraint.Width))
+            {
+                return _measured;
+            }
+
+            _constraint = available;
+            _measured = UpdateGeometry(naturalMode: false);
+            _isNaturalLayout = false;
+            return _measured;
+        }
+
+
+        private Size UpdateGeometry(bool naturalMode)
         {
             _metries.Clear();
             _lines.Clear();
@@ -643,12 +707,14 @@ namespace ColorTextBlock.Avalonia
 
                 double remainWidth = entireWidth;
 
+                var wrap = TextWrapping != TextWrapping.NoWrap && !naturalMode;
+
                 foreach (CInline inline in Content)
                 {
                     IEnumerable<CGeometry> inlineGeometry =
                         inline.Measure(
-                            (TextWrapping == TextWrapping.NoWrap) ? Double.PositiveInfinity : entireWidth,
-                            (TextWrapping == TextWrapping.NoWrap) ? Double.PositiveInfinity : remainWidth);
+                            wrap ? entireWidth : Double.PositiveInfinity,
+                            wrap ? remainWidth : Double.PositiveInfinity);
 
                     foreach (CGeometry metry in inlineGeometry)
                     {

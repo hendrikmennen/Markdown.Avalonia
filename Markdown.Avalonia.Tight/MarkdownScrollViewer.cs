@@ -9,6 +9,7 @@ using Avalonia.Media;
 using Avalonia.Metadata;
 using Avalonia.Platform;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using ColorDocument.Avalonia;
 using ColorDocument.Avalonia.DocumentElements;
 using ColorTextBlock.Avalonia;
@@ -87,6 +88,7 @@ namespace Markdown.Avalonia
         private DocumentElement? _document;
         private IBrush? _selectionBrush;
         private Wrapper _wrapper;
+        private DispatcherTimer? _restructureTimer;
 
         public MarkdownScrollViewer()
         {
@@ -220,7 +222,24 @@ namespace Markdown.Avalonia
         private void OnViewportSizeChanged(object? obj, EventArgs arg)
         {
             _headerRects = null;
-            _wrapper.Restructure();
+
+            // Coalesce the (potentially expensive) selection-overlay restructuring
+            // so it runs once after a resize settles instead of on every frame.
+            if (_restructureTimer is null)
+            {
+                _restructureTimer = new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromMilliseconds(100)
+                };
+                _restructureTimer.Tick += (s, e) =>
+                {
+                    _restructureTimer!.Stop();
+                    _wrapper.Restructure();
+                };
+            }
+
+            _restructureTimer.Stop();
+            _restructureTimer.Start();
         }
 
         private void OnScrollChanged()
