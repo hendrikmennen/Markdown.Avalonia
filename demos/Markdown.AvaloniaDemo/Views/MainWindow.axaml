@@ -126,6 +126,7 @@
       VerticalAlignment="Stretch"
       MarkdownStyleName="{Binding SelectedStyle.Name}"
       SaveScrollValueWhenContentUpdated="True"
+      EnableVirtualization="True"
       SelectionEnabled="True"
       Markdown="{Binding Text}"
       HeaderScrolled="HeaderScrolled"

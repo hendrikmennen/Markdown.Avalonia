@@ -82,6 +82,12 @@ namespace Markdown.Avalonia
                 owner => owner.SelectionEnabled,
                 (owner, v) => owner.SelectionEnabled = v);
 
+        public static readonly AvaloniaProperty<bool> EnableVirtualizationProperty =
+            AvaloniaProperty.RegisterDirect<MarkdownScrollViewer, bool>(
+                nameof(EnableVirtualization),
+                owner => owner.EnableVirtualization,
+                (owner, v) => owner.EnableVirtualization = v);
+
         private static readonly HttpClient s_httpclient = new();
         private readonly ScrollViewer _viewer;
         private SetupInfo _setup;
@@ -332,6 +338,10 @@ namespace Markdown.Avalonia
                 return;
 
             _document = _engine.TransformElement(Markdown ?? "");
+
+            if (_document is DocumentRootElement root)
+                root.Virtualize = _enableVirtualization;
+
             _document.Control.Classes.Add("Markdown_Avalonia_MarkdownViewer");
 
             var ofst = _viewer.Offset;
@@ -413,6 +423,27 @@ namespace Markdown.Avalonia
                 Focusable = _selectionEnabled = value;
             }
             get => _selectionEnabled;
+        }
+
+        private bool _enableVirtualization;
+        /// <summary>
+        /// When enabled, the document blocks are hosted in a virtualizing panel so
+        /// that only the visible blocks are laid out. This dramatically improves
+        /// scrolling and window-resize performance for very large documents.
+        /// Note: while enabled, text selection and header-scroll tracking only
+        /// operate on the currently visible (realized) blocks.
+        /// </summary>
+        public bool EnableVirtualization
+        {
+            get => _enableVirtualization;
+            set
+            {
+                if (_enableVirtualization == value)
+                    return;
+
+                _enableVirtualization = value;
+                UpdateMarkdown();
+            }
         }
 
         [Content]

@@ -42,10 +42,11 @@ namespace ColorDocument.Avalonia
             {
                 var doc = controls[i];
                 var rect = doc.Control.GetRectInDoc(anchor);
-                if (rect.HasValue)
-                {
-                    rs[i] = new DocumentElementWithBound(doc, rect.Value);
-                }
+                // When virtualization is enabled, off-screen elements are not
+                // realized and have no arranged bounds. Keep the element so the
+                // selection logic never dereferences a null Element; an empty
+                // rect simply means "not currently selectable".
+                rs[i] = new DocumentElementWithBound(doc, rect ?? default);
             }
 
             return new EnumerableExAry<DocumentElementWithBound>(rs);

@@ -58,7 +58,7 @@ namespace Markdown.Avalonia.Extensions
                 else if (values[0] is Color col)
                     c = col;
                 else
-                    return values[0];
+                    return AvaloniaProperty.UnsetValue;
 
                 return new SolidColorBrush(
                             Color.FromArgb(

@@ -59,7 +59,7 @@ namespace Markdown.Avalonia.Extensions
                     long l => (long)(l * Scale),
                     float f => (float)(f * Scale),
                     double d => (double)(d * Scale),
-                    _ => values[0],
+                    _ => AvaloniaProperty.UnsetValue,
                 };
             }
         }

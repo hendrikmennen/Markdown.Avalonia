@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using ColorTextBlock.Avalonia;
 using Markdown.Avalonia;
@@ -305,6 +306,194 @@ namespace UnitTest.CTxt
                 Approvals.GetDefaultNamer(),
                 new DiffToolReporter(DiffEngine.DiffTool.WinMerge));
         }
+
+        #region virtualization
+
+        private static string BigMarkdown(int paragraphs)
+            => string.Join(
+                "\n\n",
+                Enumerable.Range(0, paragraphs)
+                          .Select(i => $"Paragraph number {i} with some words to wrap and fill width."));
+
+        private string RichMarkdown(int repeats)
+        {
+            var path = System.IO.Path.Combine(AssetPath, "Texts", "MainWindow.md");
+            var doc = System.IO.File.ReadAllText(path);
+            return string.Join("\n\n", Enumerable.Repeat(doc, repeats));
+        }
+
+        private static int CountRealizedTextBlocks(Control root)
+            => root.GetVisualDescendants().OfType<CTextBlock>().Count();
+
+        private static void RunVirtualizationLayout(Window win)
+        {
+            for (int i = 0; i < 6; ++i)
+            {
+                win.Measure(new Size(400, 300));
+                win.Arrange(new Rect(0, 0, 400, 300));
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
+        [Test]
+        [RunOnUI]
+        public void Virtualization_realizes_only_visible_blocks()
+        {
+            var viewer = new MarkdownScrollViewer
+            {
+                EnableVirtualization = true,
+                Markdown = BigMarkdown(2000)
+            };
+
+            var win = new Window { Width = 400, Height = 300, Content = viewer };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            int realized = CountRealizedTextBlocks(viewer);
+            TestContext.Progress.WriteLine($"Virtualized realized CTextBlocks = {realized} (of 2000)");
+
+            Assert.That(realized, Is.GreaterThan(0), "Some blocks should be realized.");
+            Assert.That(realized, Is.LessThan(200), "Virtualization should realize only a small subset.");
+
+            win.Close();
+        }
+
+        [Test]
+        [RunOnUI]
+        public void Virtualization_rich_content_scroll_render_does_not_crash()
+        {
+            // Regression test for the silent crash (InvalidCastException Color->IBrush)
+            // that occurred while scrolling a virtualized document up and down when
+            // block controls were hosted via a DataTemplate. The blocks must be used
+            // as their own item containers instead.
+            var viewer = new MarkdownScrollViewer
+            {
+                EnableVirtualization = true,
+                SelectionEnabled = true,
+                Markdown = RichMarkdown(60)
+            };
+
+            var win = new Window { Width = 500, Height = 400, Content = viewer };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            var inner = viewer.GetVisualDescendants().OfType<ScrollViewer>().First();
+
+            void RenderOnce()
+            {
+                var rtb = new RenderTargetBitmap(new PixelSize(500, 400), new Vector(96, 96));
+                win.Measure(new Size(500, 400));
+                win.Arrange(new Rect(0, 0, 500, 400));
+                rtb.Render(viewer);
+                rtb.Dispose();
+            }
+
+            // Scroll all the way down and back up, rendering at each step. This
+            // repeatedly un-realizes and re-realizes block controls.
+            for (double y = 0; y < inner.Extent.Height; y += 350)
+            {
+                inner.Offset = new Vector(0, y);
+                RunVirtualizationLayout(win);
+                RenderOnce();
+            }
+            for (double y = inner.Extent.Height; y >= 0; y -= 350)
+            {
+                inner.Offset = new Vector(0, y);
+                RunVirtualizationLayout(win);
+                RenderOnce();
+            }
+
+            win.Close();
+        }
+
+        [Test]
+        [RunOnUI]
+        public void Virtualization_scroll_re_realizes_blocks()
+        {
+            var viewer = new MarkdownScrollViewer
+            {
+                EnableVirtualization = true,
+                Markdown = BigMarkdown(2000)
+            };
+
+            var win = new Window { Width = 400, Height = 300, Content = viewer };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            var inner = viewer.GetVisualDescendants().OfType<ScrollViewer>().First();
+
+            string FirstRealizedText() =>
+                viewer.GetVisualDescendants().OfType<CTextBlock>()
+                      .Select(t => t.Text).FirstOrDefault(t => t is not null) ?? "";
+
+            var top = FirstRealizedText();
+            inner.Offset = new Vector(0, 10000);
+            RunVirtualizationLayout(win);
+            var scrolled = FirstRealizedText();
+
+            Assert.That(scrolled, Is.Not.EqualTo(top), "Scrolling should realize a different set of blocks.");
+
+            // Scroll back to the top and ensure previously seen blocks re-realize cleanly.
+            Assert.DoesNotThrow(() =>
+            {
+                inner.Offset = new Vector(0, 0);
+                RunVirtualizationLayout(win);
+            });
+
+            win.Close();
+        }
+
+        [Test]
+        [RunOnUI]
+        public void NonVirtualized_realizes_all_blocks()
+        {
+            var viewer = new MarkdownScrollViewer
+            {
+                EnableVirtualization = false,
+                Markdown = BigMarkdown(2000)
+            };
+
+            var win = new Window { Width = 400, Height = 300, Content = viewer };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            int realized = CountRealizedTextBlocks(viewer);
+            TestContext.Progress.WriteLine($"Non-virtualized realized CTextBlocks = {realized} (of 2000)");
+
+            Assert.That(realized, Is.EqualTo(2000), "Without virtualization, all blocks are realized.");
+
+            win.Close();
+        }
+
+        [Test]
+        [RunOnUI]
+        public void Selection_does_not_throw_when_virtualized()
+        {
+            var engine = new Markdown.Avalonia.Markdown();
+            var doc = (ColorDocument.Avalonia.DocumentElements.DocumentRootElement)
+                engine.TransformElement(BigMarkdown(2000));
+            doc.Virtualize = true;
+
+            var win = new Window
+            {
+                Width = 400,
+                Height = 300,
+                Content = new ScrollViewer { Content = doc.Control }
+            };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            // Drag-select across the whole (mostly virtualized) document.
+            Assert.DoesNotThrow(() =>
+            {
+                doc.Select(new Point(0, 0), new Point(400, 100000));
+                var _ = doc.GetSelectedText();
+            });
+
+            win.Close();
+        }
+
+        #endregion
     }
 
     class MetryHolder : AvaloniaObject

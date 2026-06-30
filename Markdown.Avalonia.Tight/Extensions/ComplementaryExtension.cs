@@ -1,4 +1,5 @@
-﻿using Avalonia.Data;
+﻿using Avalonia;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -45,7 +46,7 @@ namespace Markdown.Avalonia.Extensions
                 else if (values[0] is Color col)
                     c = col;
                 else
-                    return values[0];
+                    return AvaloniaProperty.UnsetValue;
 
 
                 var rgb = new int[] { c.R, c.G, c.B };
