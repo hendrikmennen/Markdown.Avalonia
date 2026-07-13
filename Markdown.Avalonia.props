@@ -1,8 +1,8 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <AvaloniaVersion>11.3.11</AvaloniaVersion>
-    <DemoAvaloniaVersion>11.3.11</DemoAvaloniaVersion>
+    <AvaloniaVersion>11.3.18</AvaloniaVersion>
+    <DemoAvaloniaVersion>11.3.18</DemoAvaloniaVersion>
     <EnableAvaloniaEdit>enabled</EnableAvaloniaEdit>
     <AvaloniaEditVersion>11.2.0</AvaloniaEditVersion>
   </PropertyGroup>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageVersion>11.3.11.5</PackageVersion>
+    <PackageVersion>11.3.18</PackageVersion>
   </PropertyGroup>
 
 </Project>

@@ -166,6 +166,10 @@ namespace ColorTextBlock.Avalonia
         private double _naturalWidth = double.NaN;
         private bool _isNaturalLayout;
 
+        // Null = not yet computed. Cached result of whether the content
+        // contains width-sensitive inlines (images / inline UI controls).
+        private bool? _hasWidthSensitiveContent;
+
         private TextPointer? _beginSelect;
         private List<CGeometry> _intermediates = new();
         private TextPointer? _endSelect;
@@ -513,6 +517,7 @@ namespace ColorTextBlock.Avalonia
         /// </summary>
         private void AttachChildren(IEnumerable<CInline> newItems)
         {
+            _hasWidthSensitiveContent = null;
             foreach (CInline item in newItems)
             {
                 LogicalChildren.Add(item);
@@ -554,6 +559,7 @@ namespace ColorTextBlock.Avalonia
         /// </summary>
         private void DetachChildren(IEnumerable<CInline> removeItems)
         {
+            _hasWidthSensitiveContent = null;
             foreach (CInline item in removeItems)
             {
                 LogicalChildren.Remove(item);
@@ -581,8 +587,35 @@ namespace ColorTextBlock.Avalonia
             _measureRequested = true;
             _naturalWidth = double.NaN;
             _isNaturalLayout = false;
+            _hasWidthSensitiveContent = null;
             InvalidateMeasure();
             InvalidateArrange();
+        }
+
+        /// <summary>
+        /// True when the content contains inlines whose size depends on the
+        /// available width (images, inline UI controls). Such content must
+        /// always be measured against the real available width, so the
+        /// natural-width fast path (which measures with an infinite width)
+        /// cannot be used for it. Cached and recomputed when content changes.
+        /// </summary>
+        private bool HasWidthSensitiveContent
+            => _hasWidthSensitiveContent ??= ContainsWidthSensitive(Content);
+
+        private static bool ContainsWidthSensitive(IEnumerable<CInline> inlines)
+        {
+            if (inlines is null)
+                return false;
+
+            foreach (CInline inline in inlines)
+            {
+                if (inline is CImage or CInlineUIContainer)
+                    return true;
+
+                if (inline is CSpan span && ContainsWidthSensitive(span.Content))
+                    return true;
+            }
+            return false;
         }
 
         private void RepaintRequested()
@@ -612,21 +645,17 @@ namespace ColorTextBlock.Avalonia
                 return finalSize;
             }
 
-            _measured = LayoutForWidth(new Size(finalSize.Width, Double.PositiveInfinity));
+            _measured = LayoutForWidth(new Size(finalSize.Width, Double.PositiveInfinity), force: false);
 
             return finalSize;
         }
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (_measureRequested)
-            {
-                _measureRequested = false;
-                _naturalWidth = double.NaN;
-                _isNaturalLayout = false;
-            }
+            bool force = _measureRequested;
+            _measureRequested = false;
 
-            _measured = LayoutForWidth(availableSize);
+            _measured = LayoutForWidth(availableSize, force);
 
             InvalidateArrange();
 
@@ -638,8 +667,33 @@ namespace ColorTextBlock.Avalonia
         /// previously computed geometry whenever the new width cannot affect
         /// wrapping. Returns the measured size.
         /// </summary>
-        private Size LayoutForWidth(Size available)
+        private Size LayoutForWidth(Size available, bool force)
         {
+            if (force)
+            {
+                _naturalWidth = double.NaN;
+                _isNaturalLayout = false;
+            }
+
+            // Width-sensitive content (images, inline UI controls) must always
+            // be measured against the real available width. The natural-width
+            // fast path measures with an infinite width, which would break
+            // RelativeWidth / protrusion-fitting and async image loading, so it
+            // is not used for such content.
+            if (HasWidthSensitiveContent)
+            {
+                if (force
+                    || _measured.Width == 0d
+                    || !MathUtilities.AreClose(available.Width, _constraint.Width))
+                {
+                    _constraint = available;
+                    _measured = UpdateGeometry(naturalMode: false);
+                }
+                _isNaturalLayout = false;
+                _naturalWidth = double.NaN;
+                return _measured;
+            }
+
             var noWrap = TextWrapping == TextWrapping.NoWrap;
 
             // Learn the natural (unwrapped) width once. It is reused across
