@@ -18,6 +18,8 @@ namespace ColorDocument.Avalonia.DocumentElements
         private EnumerableEx<DocumentElement> _children;
         private SelectionList? _prevSelection;
         private bool _virtualize;
+        private double _virtualizationCacheLength = 2;
+        private VirtualizingStackPanel? _virtualizingPanel;
 
         public override Control Control => _block.Value;
         public override IEnumerable<DocumentElement> Children => _children;
@@ -36,6 +38,26 @@ namespace ColorDocument.Avalonia.DocumentElements
                     throw new InvalidOperationException(
                         $"{nameof(Virtualize)} must be set before {nameof(Control)} is accessed.");
                 _virtualize = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the number of additional viewport lengths realized above
+        /// and below the visible area. A larger buffer makes scrolling documents
+        /// with differently-sized blocks smoother at the cost of realizing more
+        /// controls. The default is 2.
+        /// </summary>
+        public double VirtualizationCacheLength
+        {
+            get => _virtualizationCacheLength;
+            set
+            {
+                if (double.IsNaN(value) || double.IsInfinity(value) || value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                _virtualizationCacheLength = value;
+                if (_virtualizingPanel is not null)
+                    _virtualizingPanel.CacheLength = value;
             }
         }
 
@@ -73,10 +95,17 @@ namespace ColorDocument.Avalonia.DocumentElements
             //
             // Each DocumentElement is mapped to its own (stable, lazily-built)
             // Control via the item template. Recycling is disabled so a realized
-            // container is never reused for a different element.
+            // container is never reused for a different element. Avalonia estimates
+            // the total extent from the average height of realized elements; keeping
+            // a few viewports buffered prevents that estimate from changing sharply
+            // whenever a heading, image, or code block enters the viewport.
             var items = new ItemsControl
             {
-                ItemsPanel = new FuncTemplate<Panel?>(() => new VirtualizingStackPanel()),
+                ItemsPanel = new FuncTemplate<Panel?>(() =>
+                    _virtualizingPanel = new VirtualizingStackPanel
+                    {
+                        CacheLength = _virtualizationCacheLength,
+                    }),
                 ItemsSource = _children.ToList(),
                 ItemTemplate = new FuncDataTemplate<DocumentElement>(
                     (element, _) => element?.Control,

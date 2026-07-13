@@ -445,6 +445,78 @@ namespace UnitTest.CTxt
 
         [Test]
         [RunOnUI]
+        public void Virtualization_buffers_blocks_to_stabilize_scrolling()
+        {
+            var viewer = new MarkdownScrollViewer
+            {
+                EnableVirtualization = true,
+                Markdown = BigMarkdown(2000)
+            };
+
+            var win = new Window { Width = 400, Height = 300, Content = viewer };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            var inner = viewer.GetVisualDescendants().OfType<ScrollViewer>().First();
+            var panel = viewer.GetVisualDescendants().OfType<VirtualizingStackPanel>().Single();
+            inner.Offset = new Vector(0, 10000);
+            RunVirtualizationLayout(win);
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(panel.CacheLength, Is.EqualTo(2));
+                Assert.That(
+                    panel.LastRealizedIndex - panel.FirstRealizedIndex,
+                    Is.GreaterThan(20),
+                    "The realization buffer should provide a representative sample of block heights.");
+                Assert.That(
+                    CountRealizedTextBlocks(viewer),
+                    Is.LessThan(200),
+                    "Buffering must retain the main benefit of virtualization.");
+            });
+
+            win.Close();
+        }
+
+        [Test]
+        [RunOnUI]
+        public void Virtualization_cache_length_can_be_updated_without_rebuilding_document()
+        {
+            var viewer = new MarkdownScrollViewer
+            {
+                EnableVirtualization = true,
+                VirtualizationCacheLength = 0,
+                Markdown = BigMarkdown(2000)
+            };
+
+            var win = new Window { Width = 400, Height = 300, Content = viewer };
+            win.Show();
+            RunVirtualizationLayout(win);
+
+            var inner = viewer.GetVisualDescendants().OfType<ScrollViewer>().First();
+            var panel = viewer.GetVisualDescendants().OfType<VirtualizingStackPanel>().Single();
+            var documentControl = panel.Parent;
+            inner.Offset = new Vector(0, 10000);
+            RunVirtualizationLayout(win);
+            var withoutBuffer = panel.LastRealizedIndex - panel.FirstRealizedIndex;
+
+            viewer.VirtualizationCacheLength = 2;
+            inner.Offset = new Vector(0, 10001);
+            RunVirtualizationLayout(win);
+            var withBuffer = panel.LastRealizedIndex - panel.FirstRealizedIndex;
+
+            Assert.Multiple(() =>
+            {
+                Assert.That(panel.CacheLength, Is.EqualTo(2));
+                Assert.That(panel.Parent, Is.SameAs(documentControl));
+                Assert.That(withBuffer, Is.GreaterThan(withoutBuffer));
+            });
+
+            win.Close();
+        }
+
+        [Test]
+        [RunOnUI]
         public void NonVirtualized_realizes_all_blocks()
         {
             var viewer = new MarkdownScrollViewer

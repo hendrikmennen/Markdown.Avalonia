@@ -88,6 +88,12 @@ namespace Markdown.Avalonia
                 owner => owner.EnableVirtualization,
                 (owner, v) => owner.EnableVirtualization = v);
 
+        public static readonly DirectProperty<MarkdownScrollViewer, double> VirtualizationCacheLengthProperty =
+            AvaloniaProperty.RegisterDirect<MarkdownScrollViewer, double>(
+                nameof(VirtualizationCacheLength),
+                owner => owner.VirtualizationCacheLength,
+                (owner, v) => owner.VirtualizationCacheLength = v);
+
         private static readonly HttpClient s_httpclient = new();
         private readonly ScrollViewer _viewer;
         private SetupInfo _setup;
@@ -340,7 +346,10 @@ namespace Markdown.Avalonia
             _document = _engine.TransformElement(Markdown ?? "");
 
             if (_document is DocumentRootElement root)
+            {
                 root.Virtualize = _enableVirtualization;
+                root.VirtualizationCacheLength = _virtualizationCacheLength;
+            }
 
             _document.Control.Classes.Add("Markdown_Avalonia_MarkdownViewer");
 
@@ -443,6 +452,35 @@ namespace Markdown.Avalonia
 
                 _enableVirtualization = value;
                 UpdateMarkdown();
+            }
+        }
+
+        private double _virtualizationCacheLength = 2;
+        /// <summary>
+        /// Gets or sets the number of additional viewport lengths kept realized
+        /// above and below the visible area when virtualization is enabled.
+        /// Increasing this value reduces extent-estimation changes for documents
+        /// with variable-height blocks, making scrolling smoother at the cost of
+        /// additional layout work and memory. The default is 2.
+        /// </summary>
+        public double VirtualizationCacheLength
+        {
+            get => _virtualizationCacheLength;
+            set
+            {
+                if (double.IsNaN(value) || double.IsInfinity(value) || value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                if (_virtualizationCacheLength == value)
+                    return;
+
+                SetAndRaise(
+                    VirtualizationCacheLengthProperty,
+                    ref _virtualizationCacheLength,
+                    value);
+
+                if (_document is DocumentRootElement root)
+                    root.VirtualizationCacheLength = value;
             }
         }
 
