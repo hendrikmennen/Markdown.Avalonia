@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-16"?>
+<StackPanel xmlns:c="clr-namespace:ColorTextBlock.Avalonia;assembly=ColorTextBlock.Avalonia" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns="https://github.com/avaloniaui">
+  <c:CTextBlock Classes="Paragraph">
+    <c:CRun Text="Open " />
+    <c:CHyperlink CommandParameter="/home/user/project/main.cs">
+      <c:CCode>
+        <c:CRun Text="main.cs" />
+      </c:CCode>
+    </c:CHyperlink>
+    <c:CRun Text=" to start." />
+  </c:CTextBlock>
+  <c:CTextBlock Classes="Paragraph">
+    <c:CRun Text="Code first: " />
+    <c:CCode>
+      <c:CRun Text="[not](a link)" />
+    </c:CCode>
+    <c:CRun Text=" and then " />
+    <c:CHyperlink CommandParameter="https://example.com">
+      <c:CRun Text="a " />
+      <c:CBold>
+        <c:CRun Text="bold" />
+      </c:CBold>
+      <c:CRun Text=" " />
+      <c:CCode>
+        <c:CRun Text="code" />
+      </c:CCode>
+      <c:CRun Text=" link" />
+    </c:CHyperlink>
+    <c:CRun Text="." />
+  </c:CTextBlock>
+  <c:CTextBlock Classes="Paragraph">
+    <c:CRun Text="Spaces: " />
+    <c:CHyperlink CommandParameter="/home/user/my file.md">
+      <c:CCode>
+        <c:CRun Text="my file.md" />
+      </c:CCode>
+    </c:CHyperlink>
+    <c:CRun Text=" and " />
+    <c:CImage />
+    <c:CRun Text="." />
+  </c:CTextBlock>
+  <c:CTextBlock Classes="Paragraph">
+    <c:CRun Text="Two in a row: " />
+    <c:CHyperlink CommandParameter="a.js">
+      <c:CCode>
+        <c:CRun Text="a.js" />
+      </c:CCode>
+    </c:CHyperlink>
+    <c:CRun Text=", " />
+    <c:CHyperlink CommandParameter="b.js">
+      <c:CCode>
+        <c:CRun Text="b.js" />
+      </c:CCode>
+    </c:CHyperlink>
+    <c:CRun Text=" and " />
+    <c:CCode>
+      <c:CRun Text="plain code" />
+    </c:CCode>
+    <c:CRun Text="." />
+  </c:CTextBlock>
+</StackPanel>

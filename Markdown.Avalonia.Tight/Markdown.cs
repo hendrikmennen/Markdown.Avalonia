@@ -244,8 +244,7 @@ namespace Markdown.Avalonia
 
 
             // inline parser
-            inlines.Add(InlineParser.New(_codeSpan, nameof(CodeSpanEvaluator), CodeSpanEvaluator));
-            inlines.Add(InlineParser.New(_imageOrHrefInline, nameof(ImageOrHrefInlineEvaluator), ImageOrHrefInlineEvaluator));
+            inlines.Add(InlineParser.New(_codeSpanOrImageOrHref, nameof(CodeSpanOrImageOrHrefEvaluator), CodeSpanOrImageOrHrefEvaluator));
 
             if (StrictBoldItalic)
             {
@@ -539,8 +538,11 @@ namespace Markdown.Avalonia
                             MaskRest(t, index, parseBegin - index, parserStart + 1, outsb);
                         }
 
+                        // Materialize first: converting e.g. a link runs a nested parse of its text that protects
+                        // inlines of its own, so the id must be taken afterwards.
+                        var inlines = rslt as IList<CInline> ?? rslt.ToList();
                         var id = _protectedInlines.Count;
-                        _protectedInlines.Add(rslt as IList<CInline> ?? rslt.ToList());
+                        _protectedInlines.Add(inlines);
                         outsb.Append((char)(ProtectBase + id));
 
                         length -= parserEnd - index;
@@ -652,7 +654,7 @@ namespace Markdown.Avalonia
 
         #region grammer - image or href
 
-        private static readonly Regex _imageOrHrefInline = new(string.Format(@"
+        private static readonly string _imageOrHrefPattern = string.Format(@"
                 (                           # wrap whole match in $1
                     (!)?                    # image maker = $2
                     \[
@@ -669,8 +671,7 @@ namespace Markdown.Avalonia
                         [ ]*                # ignore any spaces between closing quote and )
                         )?                  # title is optional
                     \)
-                )", GetNestedBracketsPattern(), GetNestedParensPattern()),
-                  RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+                )", GetNestedBracketsPattern(), GetNestedParensPattern());
 
 
         private CInline ImageOrHrefInlineEvaluator(Match match)
@@ -686,10 +687,16 @@ namespace Markdown.Avalonia
         }
 
 
+        /// <summary>
+        /// Strips the optional angle brackets around a link destination: <c>[a](&lt;my file.md&gt;)</c>.
+        /// </summary>
+        private static string UnwrapDestination(string url)
+            => url.Length >= 2 && url[0] == '<' && url[url.Length - 1] == '>' ? url.Substring(1, url.Length - 2) : url;
+
         private CInline TreatsAsHref(Match match)
         {
             string linkText = match.Groups[3].Value;
-            string url = match.Groups[4].Value;
+            string url = UnwrapDestination(match.Groups[4].Value);
             string title = match.Groups[7].Value;
 
             var link = new CHyperlink(PrivateRunSpanGamut(linkText))
@@ -717,7 +724,7 @@ namespace Markdown.Avalonia
         private CInline TreatsAsImage(Match match)
         {
             string altText = match.Groups[3].Value;
-            string urlTxt = match.Groups[4].Value;
+            string urlTxt = UnwrapDestination(match.Groups[4].Value);
             string title = match.Groups[7].Value;
 
             return LoadImage(urlTxt, title);
@@ -798,17 +805,27 @@ namespace Markdown.Avalonia
         //
         //          ... type <code>`bar`</code> ...         
         //
-        private static readonly Regex _codeSpan = new(@"
-                    (?<!\\)   # Character before opening ` can't be a backslash
-                    (`+)      # $1 = Opening run of `
-                    (.+?)     # $2 = The code block
+        private const string CodeSpanPattern = @"
+                    (?<!\\)                  # Character before opening ` can't be a backslash
+                    (?<ticks>`+)             # Opening run of `
+                    (?<code>.+?)             # The code block
                     (?<!`)
-                    \1
-                    (?!`)", RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled);
+                    \k<ticks>
+                    (?!`)";
+
+        // Code spans and links are matched in one pass so that whichever starts first wins: [`file.md`](file.md) is
+        // a link containing code, `[a](b)` is code. Matching code spans first would split the link apart.
+        // The link groups come first so their numbered groups ($1-$7, incl. the \6 back reference) are unchanged.
+        private static readonly Regex _codeSpanOrImageOrHref = new(
+            $"{_imageOrHrefPattern}|(?<codespan>{CodeSpanPattern})",
+            RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.Compiled);
+
+        private CInline CodeSpanOrImageOrHrefEvaluator(Match match)
+            => match.Groups["codespan"].Success ? CodeSpanEvaluator(match) : ImageOrHrefInlineEvaluator(match);
 
         private CCode CodeSpanEvaluator(Match match)
         {
-            string span = match.Groups[2].Value;
+            string span = match.Groups["code"].Value;
             span = Regex.Replace(span, @"^[ ]*", ""); // leading whitespace
             span = Regex.Replace(span, @"[ ]*$", ""); // trailing whitespace
 
