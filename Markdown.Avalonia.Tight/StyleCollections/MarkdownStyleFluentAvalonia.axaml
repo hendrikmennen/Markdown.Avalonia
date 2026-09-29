@@ -15,7 +15,7 @@
 
   <Style Selector=":is(md|MarkdownScrollViewer)">
     <Style.Setters>
-      <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}"/>
+      <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightBrush}"/>
     </Style.Setters>
   </Style>
 
