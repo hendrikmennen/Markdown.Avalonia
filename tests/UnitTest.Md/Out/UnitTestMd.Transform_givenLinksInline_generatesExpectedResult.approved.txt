@@ -32,13 +32,13 @@
     <c:CRun Text="." />
   </c:CTextBlock>
   <c:CTextBlock Classes="Paragraph">
-    <c:CHyperlink CommandParameter="&lt;/url/&gt;">
+    <c:CHyperlink CommandParameter="/url/">
       <c:CRun Text="URL wrapped in angle brackets" />
     </c:CHyperlink>
     <c:CRun Text="." />
   </c:CTextBlock>
   <c:CTextBlock Classes="Paragraph">
-    <c:CHyperlink CommandParameter="&lt;/url/&gt;">
+    <c:CHyperlink CommandParameter="/url/">
       <c:CRun Text="URL w/ angle brackets + title" />
     </c:CHyperlink>
     <c:CRun Text="." />

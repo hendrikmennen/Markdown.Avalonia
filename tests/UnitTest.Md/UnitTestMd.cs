@@ -83,6 +83,16 @@ namespace UnitTest.Md
 
         [Test]
         [RunOnUI]
+        public void Transform_givenLinksWithCode_generatesExpectedResult()
+        {
+            var text = Util.LoadText("Links_with_code.md");
+            var markdown = new Markdown.Avalonia.Markdown();
+            var result = markdown.Transform(text);
+            Approvals.Verify(Util.AsXaml(result));
+        }
+
+        [Test]
+        [RunOnUI]
         public void Transform_givenTextStyles_generatesExpectedResult()
         {
             var text = Util.LoadText("Text_style.md");
