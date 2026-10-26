@@ -901,26 +901,35 @@ namespace ColorTextBlock.Avalonia
                 }
 
 
-                if (ReferenceEquals(bgn.Geometry, end.Geometry))
-                {
-                    var rct = new Rect(
-                        bgn.Geometry.Left + bgn.Distance,
-                        bgn.Geometry.Top,
-                        end.Distance - bgn.Distance,
-                        bgn.Geometry.Height);
+                // Pointers of an empty block (e.g. an empty table cell) carry no geometry.
+                var bgnMetry = bgn.Geometry;
+                var endMetry = end.Geometry;
 
-                    TryRender(bgn.Geometry, rct);
+                if (ReferenceEquals(bgnMetry, endMetry))
+                {
+                    if (bgnMetry is not null)
+                    {
+                        var rct = new Rect(
+                            bgnMetry.Left + bgn.Distance,
+                            bgnMetry.Top,
+                            end.Distance - bgn.Distance,
+                            bgnMetry.Height);
+
+                        TryRender(bgnMetry, rct);
+                    }
                 }
                 else
                 {
-                    TryRender(bgn.Geometry, new Rect(bgn.Geometry.Left + bgn.Distance, bgn.Geometry.Top, bgn.Geometry.Width - bgn.Distance, bgn.Geometry.Height));
+                    if (bgnMetry is not null)
+                        TryRender(bgnMetry, new Rect(bgnMetry.Left + bgn.Distance, bgnMetry.Top, bgnMetry.Width - bgn.Distance, bgnMetry.Height));
 
                     foreach (var inter in _intermediates)
                     {
                         TryRender(inter, new Rect(inter.Left, inter.Top, inter.Width, inter.Height));
                     }
 
-                    TryRender(end.Geometry, new Rect(end.Geometry.Left, end.Geometry.Top, end.Distance, end.Geometry.Height));
+                    if (endMetry is not null)
+                        TryRender(endMetry, new Rect(endMetry.Left, endMetry.Top, end.Distance, endMetry.Height));
                 }
 
                 void TryRender(CGeometry metry, Rect rct)
