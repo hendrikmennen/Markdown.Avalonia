@@ -12,14 +12,14 @@ namespace ColorTextBlock.Avalonia
         internal int InternalIndex { get; }
         internal int TrailingLength { get; }
         internal double Distance { get; }
-        internal CGeometry Geometry { get; }
+        internal CGeometry? Geometry { get; }
 
         internal int PathDepth => _path.Length;
         internal CInline this[int idx] => _path[idx];
 
         private CInline[] _path;
 
-        private TextPointer(CInline[] path, CGeometry geometry, int index, int internalIndex, int trallingLength, double distance)
+        private TextPointer(CInline[] path, CGeometry? geometry, int index, int internalIndex, int trallingLength, double distance)
         {
             _path = path;
             Geometry = geometry;

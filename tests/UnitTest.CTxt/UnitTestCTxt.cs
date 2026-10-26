@@ -35,6 +35,22 @@ namespace UnitTest.CTxt
 
         [Test]
         [RunOnUI]
+        public void SelectingEmptyBlock_DoesNotThrowOnRender()
+        {
+            // An empty block (e.g. an empty table cell) has no geometries, so its
+            // begin/end pointers carry none either.
+            var ctxt = new CTextBlock();
+            ctxt.Measure(new Size(100, 100));
+            ctxt.Arrange(new Rect(0, 0, 100, 20));
+
+            ctxt.Select(ctxt.GetBegin(), ctxt.GetEnd());
+
+            Assert.DoesNotThrow(() => new MetryHolder(ctxt, 100, 20));
+            Assert.AreEqual(string.Empty, ctxt.GetSelectedText());
+        }
+
+        [Test]
+        [RunOnUI]
         public void GivenTest1_generatesExpectedResult()
         {
             var tst1 = new Test1();
